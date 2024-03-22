@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 // import "./App.css";
-import QueryBuilder from "./components/queryBuilder";
-import QueryResult from "./components/queryResult";
+
+import QueryBuilder from "./QueryBuilder";
+import QueryResult from "./QueryResult";
 
 function App() {
   const [availableEvents, setAvailableEvents] = useState([]);
