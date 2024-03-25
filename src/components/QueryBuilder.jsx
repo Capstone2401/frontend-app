@@ -2,7 +2,11 @@ import Metric from "./Metric";
 import Filter from "./Filter";
 import DateRange from "./DateRange";
 
-export default function QueryBuilder({ availableEvents, setSelectedEvent }) {
+export default function QueryBuilder({
+  availableEvents,
+  setSelectedEvent,
+  setDateRange,
+}) {
   return (
     <section>
       <article className="events">
@@ -15,7 +19,7 @@ export default function QueryBuilder({ availableEvents, setSelectedEvent }) {
         <Filter />
       </article>
       <article className="date-picker">
-        <DateRange />
+        <DateRange setPrevious={setDateRange} />
       </article>
     </section>
   );

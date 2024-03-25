@@ -9,9 +9,10 @@ function App() {
   const [availableEvents, setAvailableEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [queryData, setQueryData] = useState([]);
+  const [dateRange, setDateRange] = useState("7D");
 
   useEffect(() => {
-    axios.get("http://localhost:3000/configuredEvents").then((response) => {
+    axios.get("http://localhost:3000/allEventNames").then((response) => {
       setAvailableEvents(response.data);
     });
   }, []);
@@ -19,17 +20,23 @@ function App() {
   useEffect(() => {
     if (selectedEvent === null) return;
     axios
-      .get(`http://localhost:3000/queryResult?selectedEvent=${selectedEvent}`)
+      .get(`http://localhost:3000/events`, {
+        params: {
+          event_name: selectedEvent,
+          date_range: dateRange,
+        },
+      })
       .then((response) => {
         setQueryData(response.data);
       });
-  }, [selectedEvent]); // selectedFilter & Timeframe yet to be implemented
+  }, [selectedEvent, dateRange]); // TODO selectedFilter yet to be implemented
 
   return (
     <>
       <QueryBuilder
         availableEvents={availableEvents}
         setSelectedEvent={setSelectedEvent}
+        setPrevious={setDateRange}
       />
       <QueryResult queryData={queryData} />
     </>
