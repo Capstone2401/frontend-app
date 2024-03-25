@@ -1,14 +1,22 @@
+import DateButton from "./DateButton";
+
 export default function DateRange({ setDateRange }) {
+  const BACKEND_ACCEPTED_DATE_RANGES = [
+    "Today",
+    "Yesterday",
+    "7D",
+    "30D",
+    "3M",
+    "6M",
+    "12M",
+  ];
+
   return (
     // TODO Indicate that the currently active previous is selected visually.
     <div onClick={setDateRange(this.value)}>
-      <button value={"Today"}>Today</button>
-      <button value={"Yesterday"}>Yesterday</button>
-      <button value={"Last7D"}>7D</button>
-      <button value={"Last30D"}>30D</button>
-      <button value={"Last3M"}>3M</button>
-      <button value={"Last6M"}>6M</button>
-      <button value={"Last12M"}>12M</button>
+      {BACKEND_ACCEPTED_DATE_RANGES.map((option) => (
+        <DateButton key={option} content={option} />
+      ))}
     </div>
   );
 }
