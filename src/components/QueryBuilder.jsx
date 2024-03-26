@@ -3,6 +3,7 @@ import Filter from "./Filter";
 import DateRange from "./DateRange";
 
 export default function QueryBuilder({ availableEvents, setSelectedEvent }) {
+  const mockData = ["Login", "Signup", "Page view"];
   return (
     <section>
       <article className="events">

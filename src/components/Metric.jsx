@@ -6,6 +6,5 @@ export default function Metric() {
       <Dropdown />
       <Dropdown />
     </>
-  )
+  );
 }
-
