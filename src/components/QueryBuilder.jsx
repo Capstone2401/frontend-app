@@ -2,17 +2,12 @@ import Metric from "./Metric";
 import Filter from "./Filter";
 import DateRange from "./DateRange";
 
-export default function QueryBuilder({
-  availableEvents,
-  handleSetSelectedEvent,
-}) {
+export default function QueryBuilder({ availableEvents }) {
   return (
-    <section className="w-1/4 border border-black flex flex-col justify-start p-10 bg-base-100">
+    <section className="w-1/4 rounded-md border border-black shadow-2xl flex flex-col justify-start p-10 bg-base-100">
       <article>
-        <Metric
-          availableEvents={availableEvents}
-          handleSetSelectedEvent={handleSetSelectedEvent}
-        />
+        <h2>Metric</h2>
+        <Metric availableEvents={availableEvents} />
       </article>
       <article className="filters">
         <Filter />
