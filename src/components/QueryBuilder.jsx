@@ -2,14 +2,16 @@ import Metric from "./Metric";
 import Filter from "./Filter";
 import DateRange from "./DateRange";
 
-export default function QueryBuilder({ availableEvents, setSelectedEvent }) {
-  const mockData = ["Login", "Signup", "Page view"];
+export default function QueryBuilder({
+  availableEvents,
+  handleSetSelectedEvent,
+}) {
   return (
-    <section>
-      <article className="events">
+    <section className="w-1/4 border border-black flex flex-col justify-start p-10 bg-base-100">
+      <article>
         <Metric
           availableEvents={availableEvents}
-          setSelectedEvent={setSelectedEvent}
+          handleSetSelectedEvent={handleSetSelectedEvent}
         />
       </article>
       <article className="filters">

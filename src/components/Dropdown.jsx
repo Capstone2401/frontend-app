@@ -1,16 +1,28 @@
-export default function Dropdown() {}
+export default function Dropdown({ text, items, handleSetSelection }) {
+  if (!items) {
+    return null;
+  }
 
-// TODO; Finish implementing generalized `Dropdown` component so that it can be used in other components
-// export default function Metric({ availableEvents, setSelectedEvent }) {
-//   return (
-//     <div>
-//       <select onChange={() => setSelectedEvent(this.value)}>
-//         {availableEvents.map((event) => (
-//           <option key={event} value={event}>
-//             {event}
-//           </option>
-//         ))}
-//       </select>
-//     </div>
-//   );
-// }
+  return (
+    <div className="dropdown dropdown-right">
+      <div
+        tabIndex={0}
+        role="button"
+        className="btn w-52 text-base-100 bg-primary hover:bg-secondary"
+      >
+        {text}
+      </div>
+      <ul
+        tabIndex={0}
+        className="dropdown-content z-[1] menu p-2 shadow bg-neutral-600 text-white rounded-md w-52"
+        onClick={(e) => handleSetSelection(e)}
+      >
+        {items.map((item) => (
+          <li key={item}>
+            <a>{item}</a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
