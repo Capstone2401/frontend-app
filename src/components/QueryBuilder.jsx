@@ -1,48 +1,64 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import axios from "axios";
 import Metric from "./Metric";
 import Filter from "./Filter";
 import DateRange from "./DateRange";
 
-export default function QueryBuilder() {
+export default function QueryBuilder({ handleSetQueryData }) {
   const [selectedEvent, setSelectedEvent] = useState({});
   const [selectedAggregation, setSelectedAggregation] = useState({});
   const [filter, setFilter] = useState({});
+  const [dateRange, setDateRange] = useState("3M");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
-    let abortController = new AbortController();
+    let source = axios.CancelToken.source();
 
     const performRequest = async () => {
       setLoading(true);
 
       try {
-        const response = await fetch("https://catfact.ninja/fact", {
-          signal: abortController.signal,
+        const response = await axios.get("/api/events", {
+          cancelToken: source.token,
+          params: {
+            eventName: selectedEvent.title,
+            filters: filter,
+            aggregationType: selectedAggregation.aggregation,
+            dateRange: dateRange,
+          },
         });
-        const data = await response.json();
+        const data = response.data;
+        handleSetQueryData(data);
+
         if (isMounted) {
           setLoading(false);
         }
       } catch (error) {
-        if (isMounted) {
+        if (!axios.isCancel(error) && isMounted) {
           setLoading(false);
         }
       }
     };
 
     const debouncedRequest = setTimeout(async () => {
-      if (!selectedEvent.title) return;
+      if (!selectedEvent.title || !selectedAggregation.title) return;
       await performRequest();
     }, 2500);
 
     return () => {
       clearTimeout(debouncedRequest);
       isMounted = false;
-      abortController.abort();
-      abortController = new AbortController();
+      source.cancel("Request cancelled due to component unmount");
+      source = axios.CancelToken.source();
     };
-  }, [selectedEvent, selectedAggregation, filter]);
+  }, [
+    selectedEvent,
+    selectedAggregation,
+    filter,
+    dateRange,
+    handleSetQueryData,
+  ]);
 
   const handleSetFilter = (newFilters) => {
     let filterCopy = JSON.parse(JSON.stringify(filter));
@@ -62,6 +78,8 @@ export default function QueryBuilder() {
 
     setFilter(() => filterCopy);
   };
+
+  const handleSetDateRange = (dateRange) => setDateRange(() => dateRange);
 
   const createSelectionHandler = (setter) => {
     return (item, dropDown) => {
@@ -89,7 +107,7 @@ export default function QueryBuilder() {
         <Filter handleSetFilter={handleSetFilter} filter={filter} />
       </article>
       <article className="date-picker">
-        <DateRange />
+        <DateRange handleSetDateRange={handleSetDateRange} />
       </article>
     </section>
   );

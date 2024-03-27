@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState, useEffect } from "react";
 import Dropdown from "./Dropdown";
 
@@ -12,16 +13,16 @@ export default function Metric({
   const defaultTitleAggregations = "Aggregation";
 
   useEffect(() => {
-    const result = {
-      data: [
-        { title: "All events" },
-        { title: "Login" },
-        { title: "Signup" },
-        { title: "Page view" },
-      ],
+    const fetchEventNames = async () => {
+      const response = await axios.get("/api/allEventNames");
+      setAvailableEvents(() =>
+        response.data.map((title) => {
+          return { title };
+        }),
+      );
     };
 
-    setAvailableEvents(result.data);
+    fetchEventNames();
   }, []);
 
   const aggregationTypes = [
