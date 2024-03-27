@@ -14,7 +14,6 @@ export default function Metric({
   useEffect(() => {
     const result = {
       data: [
-        { title: defaultTitleEvents },
         { title: "All events" },
         { title: "Login" },
         { title: "Signup" },
@@ -26,7 +25,6 @@ export default function Metric({
   }, []);
 
   const aggregationTypes = [
-    { aggregation: null, title: defaultTitleAggregations },
     { aggregation: "total", title: "Total" },
     { aggregation: "average", title: "Per user: Average" },
     { aggregation: "median", title: "Per user: Median" },
@@ -46,7 +44,7 @@ export default function Metric({
       </div>
       <div>
         <Dropdown
-          defaultTitle={"Aggregation"}
+          defaultTitle={defaultTitleAggregations}
           items={aggregationTypes}
           selection={selectedAggregation}
           handleSetSelection={handleSetSelectedAggregation}
