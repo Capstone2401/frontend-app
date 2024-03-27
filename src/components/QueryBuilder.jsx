@@ -6,7 +6,7 @@ import DateRange from "./DateRange";
 export default function QueryBuilder() {
   const [selectedEvent, setSelectedEvent] = useState({});
   const [selectedAggregation, setSelectedAggregation] = useState({});
-  const [currentFilter, setCurrentFilter] = useState({});
+  const [filter, setFilter] = useState({});
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -17,17 +17,14 @@ export default function QueryBuilder() {
       setLoading(true);
 
       try {
-        // Simulated network request (replace with your actual query)
         const response = await fetch("https://catfact.ninja/fact", {
           signal: abortController.signal,
         });
         const data = await response.json();
         if (isMounted) {
-          console.log("Response:", data);
           setLoading(false);
         }
       } catch (error) {
-        console.error("Error:", error);
         if (isMounted) {
           setLoading(false);
         }
@@ -45,10 +42,25 @@ export default function QueryBuilder() {
       abortController.abort();
       abortController = new AbortController();
     };
-  }, [selectedEvent, selectedAggregation, currentFilter]);
+  }, [selectedEvent, selectedAggregation, filter]);
 
   const handleSetFilter = (newFilters) => {
-    setCurrentFilter({ ...currentFilter, newFilters });
+    let filterCopy = JSON.parse(JSON.stringify(filter));
+
+    for (const attr in newFilters) {
+      const newValue = newFilters[attr];
+
+      filterCopy[attr] = filterCopy[attr] || [];
+      const currentValues = filterCopy[attr];
+
+      if (!currentValues.includes(newValue)) {
+        currentValues.push(newValue);
+      } else {
+        currentValues.splice(currentValues.indexOf(newValue), 1);
+      }
+    }
+
+    setFilter(() => filterCopy);
   };
 
   const createSelectionHandler = (setter) => {
@@ -74,7 +86,7 @@ export default function QueryBuilder() {
         />
       </article>
       <article className="filters">
-        <Filter handleSetFilter={handleSetFilter} />
+        <Filter handleSetFilter={handleSetFilter} filter={filter} />
       </article>
       <article className="date-picker">
         <DateRange />
