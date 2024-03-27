@@ -1,23 +1,20 @@
 import { useState, useEffect } from "react";
 import Dropdown from "./Dropdown";
 
-export default function Metric() {
+export default function Metric({
+  selectedEvent,
+  selectedAggregation,
+  handleSetSelectedEvent,
+  handleSetSelectedAggregation,
+}) {
   const [availableEvents, setAvailableEvents] = useState([]);
-  const [selectedEvent, setSelectedEvent] = useState({});
-  const [selectedAggregation, setSelectedAggregation] = useState({});
-
-  const createSelectionHandler = (setter) => {
-    return (item, dropDown) => {
-      const selection = item;
-      dropDown.current.blur();
-
-      setter(selection);
-    };
-  };
+  const defaultTitleEvents = "Events";
+  const defaultTitleAggregations = "Aggregation";
 
   useEffect(() => {
     const result = {
       data: [
+        { title: defaultTitleEvents },
         { title: "All events" },
         { title: "Login" },
         { title: "Signup" },
@@ -29,6 +26,7 @@ export default function Metric() {
   }, []);
 
   const aggregationTypes = [
+    { aggregation: null, title: defaultTitleAggregations },
     { aggregation: "total", title: "Total" },
     { aggregation: "average", title: "Per user: Average" },
     { aggregation: "median", title: "Per user: Median" },
@@ -40,18 +38,18 @@ export default function Metric() {
     <div className="border border-gray-400 rounded-md flex flex-col gap-8 w-full p-5">
       <div>
         <Dropdown
-          defaultText={"Events"}
+          defaultTitle={defaultTitleEvents}
           items={availableEvents}
           selection={selectedEvent}
-          handleSetSelection={createSelectionHandler(setSelectedEvent)}
+          handleSetSelection={handleSetSelectedEvent}
         />
       </div>
       <div>
         <Dropdown
-          defaultText={"Aggregation"}
+          defaultTitle={"Aggregation"}
           items={aggregationTypes}
           selection={selectedAggregation}
-          handleSetSelection={createSelectionHandler(setSelectedAggregation)}
+          handleSetSelection={handleSetSelectedAggregation}
         />
       </div>
     </div>

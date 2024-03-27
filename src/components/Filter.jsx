@@ -1,17 +1,9 @@
-import { useState } from "react";
 import FilterDropdown from "./FilterDropdown";
 
-export default function Filter() {
+export default function Filter({ handleSetFilter }) {
   const mockData = {
     device: ["desktop", "iPhone", "Mac"],
     city: ["Boston", "New york"],
-  };
-  const [selectedFilterAttribute, setFilterAttribute] = useState({});
-  const [selectedFilterValue, setFilterValue] = useState({});
-
-  const handleSetFilter = (attribute, value) => {
-    setFilterAttribute(attribute);
-    setFilterValue(value);
   };
 
   return (
@@ -19,8 +11,6 @@ export default function Filter() {
       <FilterDropdown
         items={mockData}
         text={"Filter"}
-        selectedFilterAttribute={selectedFilterAttribute}
-        selectedFilterValue={selectedFilterValue}
         handleSetFilter={handleSetFilter}
       />
     </div>
