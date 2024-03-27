@@ -7,6 +7,46 @@ export default function QueryBuilder() {
   const [selectedEvent, setSelectedEvent] = useState({});
   const [selectedAggregation, setSelectedAggregation] = useState({});
   const [currentFilter, setCurrentFilter] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    let abortController = new AbortController();
+
+    const performRequest = async () => {
+      setLoading(true);
+
+      try {
+        // Simulated network request (replace with your actual query)
+        const response = await fetch("https://catfact.ninja/fact", {
+          signal: abortController.signal,
+        });
+        const data = await response.json();
+        if (isMounted) {
+          console.log("Response:", data);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    const debouncedRequest = setTimeout(async () => {
+      if (!selectedEvent.title) return;
+      await performRequest();
+    }, 2500);
+
+    return () => {
+      clearTimeout(debouncedRequest);
+      isMounted = false;
+      abortController.abort();
+      abortController = new AbortController();
+    };
+  }, [selectedEvent, selectedAggregation, currentFilter]);
+
   const handleSetFilter = (newFilters) => {
     setCurrentFilter({ ...currentFilter, newFilters });
   };
