@@ -1,6 +1,6 @@
 import FilterDropdown from "./FilterDropdown";
 
-export default function Filter({ handleSetFilter }) {
+export default function Filter({ handleSetFilter, filter }) {
   const mockData = {
     device: ["desktop", "iPhone", "Mac"],
     city: ["Boston", "New york"],
@@ -12,6 +12,7 @@ export default function Filter({ handleSetFilter }) {
         items={mockData}
         text={"Filter"}
         handleSetFilter={handleSetFilter}
+        filter={filter}
       />
     </div>
   );
