@@ -15,8 +15,8 @@ export default function Metric({
   useEffect(() => {
     const fetchEventNames = async () => {
       try {
-        const response = await axios.get("/api/allEventNames");
-        setAvailableEvents(() => response.data.map((title) => ({ title })));
+        const response = await axios.get("/api/info/eventNames");
+        setAvailableEvents(response.data.map((title) => ({ title })));
       } catch (error) {
         console.error(error);
       }

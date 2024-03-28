@@ -7,7 +7,18 @@ import QueryResult from "./QueryResult";
 function App() {
   const [queryData, setQueryData] = useState([]);
 
-  const handleSetQueryData = useCallback((data) => setQueryData(data), []);
+  const handleSetQueryData = useCallback(
+    (data) =>
+      setQueryData(() => {
+        const copy = [...data];
+        copy.forEach((record) => {
+          record.value = record.calculated_value;
+          delete record.calculated_value;
+        });
+        return copy;
+      }),
+    [],
+  );
 
   return (
     <div className="flex flex-col justify-between h-full p-10">

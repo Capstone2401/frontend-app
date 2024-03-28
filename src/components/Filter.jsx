@@ -8,7 +8,7 @@ export default function Filter({ handleSetFilter, filter }) {
   useEffect(() => {
     const fetchAttributes = async () => {
       try {
-        const response = await axios.get("/api/attributes");
+        const response = await axios.get("/api/info/attributes");
         setAttributes(response.data);
       } catch (error) {
         console.error(error);

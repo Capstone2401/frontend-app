@@ -20,7 +20,7 @@ export default function QueryBuilder({ handleSetQueryData }) {
 
       try {
         const response = await axios.get(
-          `/api/${selectedAggregation.category}`,
+          `/api/query/${selectedAggregation.category}`,
           {
             cancelToken: source.token,
             params: {
