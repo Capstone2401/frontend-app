@@ -8,7 +8,15 @@ function App() {
   const [queryData, setQueryData] = useState([]);
 
   const handleSetQueryData = useCallback(
-    (data) => setQueryData(() => data),
+    (data) =>
+      setQueryData(() => {
+        const copy = [...data];
+        copy.forEach((record) => {
+          record.value = record.calculated_value;
+          delete record.calculated_value;
+        });
+        return copy;
+      }),
     [],
   );
 
