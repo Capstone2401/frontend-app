@@ -8,7 +8,7 @@ export default function Filter({ handleSetFilter, filter }) {
   useEffect(() => {
     const fetchAttributes = async () => {
       try {
-        const response = await axios.get("/api/attributes");
+        const response = await axios.get("/api/info/attributes");
         setAttributes(response.data);
       } catch (error) {
         console.error(error);
@@ -17,10 +17,6 @@ export default function Filter({ handleSetFilter, filter }) {
 
     fetchAttributes();
   }, []);
-  // const mockData = {
-  //   device: ["desktop", "iPhone", "Mac"],
-  //   city: ["Boston", "New york"],
-  // };
 
   return (
     <div className="p-5 w-full">
