@@ -1,45 +1,23 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-// import "./App.css";
+import { useState, useCallback } from "react";
+import "../App.css";
 
 import QueryBuilder from "./QueryBuilder";
 import QueryResult from "./QueryResult";
 
 function App() {
-  const [availableEvents, setAvailableEvents] = useState([]);
-  const [selectedEvent, setSelectedEvent] = useState(null);
   const [queryData, setQueryData] = useState([]);
-  const [dateRange, setDateRange] = useState("7D");
 
-  useEffect(() => {
-    axios.get("http://localhost:3000/allEventNames").then((response) => {
-      setAvailableEvents(response.data);
-    });
-  }, []);
-
-  useEffect(() => {
-    if (selectedEvent === null) return;
-    axios
-      .get(`http://localhost:3000/events`, {
-        params: {
-          event_name: selectedEvent,
-          date_range: dateRange,
-        },
-      })
-      .then((response) => {
-        setQueryData(response.data);
-      });
-  }, [selectedEvent, dateRange]); // TODO selectedFilter yet to be implemented
+  const handleSetQueryData = useCallback((data) => setQueryData(data), []);
 
   return (
-    <>
-      <QueryBuilder
-        availableEvents={availableEvents}
-        setSelectedEvent={setSelectedEvent}
-        setPrevious={setDateRange}
-      />
-      <QueryResult queryData={queryData} />
-    </>
+    <div className="flex flex-col justify-between h-full p-10">
+      <header>DataLoaf</header>
+      <main className="flex flex-1 px-20 py-10 h-full">
+        <QueryBuilder handleSetQueryData={handleSetQueryData} />
+        <QueryResult queryData={queryData} />
+      </main>
+      <footer>Copyright stuff 2024</footer>
+    </div>
   );
 }
 
