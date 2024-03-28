@@ -26,11 +26,12 @@ export default function Metric({
   }, []);
 
   const aggregationTypes = [
-    { aggregation: "total", title: "Total" },
-    { aggregation: "average", title: "Per user: Average" },
-    { aggregation: "median", title: "Per user: Median" },
-    { aggregation: "minimum", title: "Per user: Minimum" },
-    { aggregation: "maximum", title: "Per user: Maximum" },
+    { category: "events", aggregation: "total", title: "Total Events" },
+    { category: "users", aggregation: "total", title: "Unique Users" },
+    { category: "events", aggregation: "average", title: "Per user: Average" },
+    { category: "events", aggregation: "median", title: "Per user: Median" },
+    { category: "events", aggregation: "minimum", title: "Per user: Minimum" },
+    { category: "events", aggregation: "maximum", title: "Per user: Maximum" },
   ];
 
   return (

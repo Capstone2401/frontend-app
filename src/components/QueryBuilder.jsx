@@ -19,16 +19,20 @@ export default function QueryBuilder({ handleSetQueryData }) {
       setLoading(true);
 
       try {
-        const response = await axios.get("/api/events", {
-          cancelToken: source.token,
-          params: {
-            eventName: selectedEvent.title,
-            filters: filter,
-            aggregationType: selectedAggregation.aggregation,
-            dateRange: dateRange,
+        const response = await axios.get(
+          `/api/${selectedAggregation.category}`,
+          {
+            cancelToken: source.token,
+            params: {
+              eventName: selectedEvent.title,
+              filters: filter,
+              aggregationType: selectedAggregation.aggregation,
+              dateRange: dateRange,
+            },
           },
-        });
+        );
         const data = response.data;
+        console.log(data);
         handleSetQueryData(data);
 
         if (isMounted) {

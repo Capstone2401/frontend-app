@@ -27,7 +27,7 @@ export default function Dropdown({
       >
         {items.map((item) => (
           <li
-            key={item.aggregation || item.title}
+            key={item.title}
             onClick={() => handleSetSelection(item, dropDownRef)}
           >
             <a data-aggregation={item.aggregation}>{item.title}</a>
