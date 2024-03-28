@@ -27,6 +27,7 @@ const CustomTooltip = ({ active, payload, timeUnit }) => {
 
   return null;
 };
+
 export default function Graph({ queryData }) {
   const parentRef = useRef(null);
   const [chartWidth, setChartWidth] = useState(0);
@@ -36,7 +37,7 @@ export default function Graph({ queryData }) {
     if (parentRef.current) {
       const parentWidth = parentRef.current.offsetWidth;
       const parentHeight = parentRef.current.offsetHeight;
-      const width = (2 / 3) * parentWidth; // Calculate two-thirds of parent's width
+      const width = (2 / 3) * parentWidth;
       const height = (3 / 4) * parentHeight;
       setChartWidth(width);
       setChartHeight(height);
@@ -45,16 +46,15 @@ export default function Graph({ queryData }) {
 
   const getTimeUnit = (queryData) => {
     if (queryData.length < 1) return;
+    const record = queryData[0];
 
-    for (const record of queryData) {
-      switch (true) {
-        case record.hour:
-          return "hour";
-        case record.day:
-          return "day";
-        case record.month:
-          return "month";
-      }
+    switch (true) {
+      case !!record.hour:
+        return "hour";
+      case !!record.day:
+        return "day";
+      case !!record.month:
+        return "month";
     }
   };
 
