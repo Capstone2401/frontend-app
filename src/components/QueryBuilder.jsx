@@ -32,7 +32,6 @@ export default function QueryBuilder({ handleSetQueryData }) {
           },
         );
         const data = response.data;
-        console.log(data);
         handleSetQueryData(data);
 
         if (isMounted) {
