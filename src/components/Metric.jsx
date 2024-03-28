@@ -14,17 +14,18 @@ export default function Metric({
 
   useEffect(() => {
     const fetchEventNames = async () => {
-      const response = await axios.get("/api/info/eventNames");
-      setAvailableEvents(() =>
-        response.data.map((title) => {
-          return { title };
-        }),
-      );
+      try {
+        const response = await axios.get("/api/info/eventNames");
+        setAvailableEvents(response.data.map((title) => ({ title })));
+      } catch (error) {
+        console.error(error);
+      }
     };
-
     fetchEventNames();
   }, []);
 
+  // 'aggregation' values map to logic on the backend used to differntiate what type of query to execute
+  // any changes to these values will require corresponding changes to backend logic
   const aggregationTypes = [
     { category: "events", aggregation: "total", title: "Total Events" },
     { category: "users", aggregation: "total", title: "Unique Users" },

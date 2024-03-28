@@ -4,7 +4,8 @@ export default function FilterDropDown({ items, handleSetFilter, filter }) {
   const eventAttrData = items.event;
   const userAttrData = items.user;
 
-  if (!eventAttrData || !userAttrData) return;
+  if (!eventAttrData || !userAttrData) return null;
+
   const processFilterSelections = (e) => {
     const attr = e.target.getAttribute("data-attribute");
     const value = e.target.getAttribute("data-value");
