@@ -4,7 +4,7 @@ export default function FilterDropdownOption({
   attributes,
   filter,
 }) {
-  if (!attributes) return;
+  if (!attributes) return null;
   return (
     <>
       {attributes.map((attribute) => (

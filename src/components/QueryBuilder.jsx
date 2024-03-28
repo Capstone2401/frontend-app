@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import Metric from "./Metric";
 import Filter from "./Filter";
@@ -31,6 +31,7 @@ export default function QueryBuilder({ handleSetQueryData }) {
             },
           },
         );
+
         const data = response.data;
         handleSetQueryData(data);
 

@@ -17,10 +17,6 @@ export default function Filter({ handleSetFilter, filter }) {
 
     fetchAttributes();
   }, []);
-  // const mockData = {
-  //   device: ["desktop", "iPhone", "Mac"],
-  //   city: ["Boston", "New york"],
-  // };
 
   return (
     <div className="p-5 w-full">

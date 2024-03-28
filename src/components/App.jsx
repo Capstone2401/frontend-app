@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import "../App.css";
 
 import QueryBuilder from "./QueryBuilder";
@@ -7,10 +7,7 @@ import QueryResult from "./QueryResult";
 function App() {
   const [queryData, setQueryData] = useState([]);
 
-  const handleSetQueryData = useCallback(
-    (data) => setQueryData(() => data),
-    [],
-  );
+  const handleSetQueryData = useCallback((data) => setQueryData(data), []);
 
   return (
     <div className="flex flex-col justify-between h-full p-10">
