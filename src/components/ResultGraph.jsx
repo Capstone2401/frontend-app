@@ -6,22 +6,23 @@ import {
   XAxis,
   YAxis,
   Tooltip,
+  ResponsiveContainer,
 } from "recharts";
 
 const CustomTooltip = ({ active, payload, timeUnit }) => {
   if (active && payload && payload.length) {
     return (
-      <div
+      <ResponsiveContainer
         className="custom-tooltip"
         style={{
-          backgroundColor: "rgb(20, 20, 20)",
           padding: "5px",
-          borderRadius: "0.5rem",
+          borderRadius: "0.375rem",
+          backgroundColor: "rgb(255, 255, 255, .10)",
         }}
       >
         <p>{`${timeUnit}: ${payload[0].payload.month}`}</p>
         <p>{`Value: ${payload[0].value}`}</p>
-      </div>
+      </ResponsiveContainer>
     );
   }
 
@@ -30,19 +31,6 @@ const CustomTooltip = ({ active, payload, timeUnit }) => {
 
 export default function Graph({ queryData }) {
   const parentRef = useRef(null);
-  const [chartWidth, setChartWidth] = useState(0);
-  const [chartHeight, setChartHeight] = useState(0);
-
-  useEffect(() => {
-    if (parentRef.current) {
-      const parentWidth = parentRef.current.offsetWidth;
-      const parentHeight = parentRef.current.offsetHeight;
-      const width = (2 / 3) * parentWidth;
-      const height = (3 / 4) * parentHeight;
-      setChartWidth(width);
-      setChartHeight(height);
-    }
-  }, []);
 
   const getTimeUnit = (queryData) => {
     if (queryData.length < 1) return;
@@ -61,16 +49,15 @@ export default function Graph({ queryData }) {
   let timeUnit = getTimeUnit(queryData);
 
   return (
-    <div className="w-3/4" ref={parentRef}>
+    <ResponsiveContainer width="70%" height="70%" ref={parentRef}>
       <LineChart
-        width={chartWidth}
-        height={chartHeight}
+        width={500}
+        height={400}
         data={queryData}
         style={{
-          backgroundColor: "#3C3838",
+          backgroundColor: "##231f1f",
           padding: "3rem",
-          borderRadius: "0.5rem",
-          opacity: "100",
+          borderRadius: "0.375rem",
         }}
       >
         <Line type="monotone" dataKey="value" stroke="#F1D492" />
@@ -79,6 +66,6 @@ export default function Graph({ queryData }) {
         <YAxis dataKey="value" stroke="#ccc" />
         <Tooltip content={<CustomTooltip timeUnit={timeUnit} />} />
       </LineChart>
-    </div>
+    </ResponsiveContainer>
   );
 }

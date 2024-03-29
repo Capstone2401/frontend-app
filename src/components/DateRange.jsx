@@ -13,7 +13,10 @@ export default function DateRange({ handleSetDateRange }) {
 
   return (
     // TODO Indicate that the currently active previous is selected visually.
-    <div onClick={() => handleSetDateRange()}>
+    <div
+      className="btn-group btn-group-verticallg:btn-group-horizontal p-5 w-fit"
+      onClick={() => handleSetDateRange()}
+    >
       {BACKEND_ACCEPTED_DATE_RANGES.map((option) => (
         <DateButton key={option} content={option} />
       ))}

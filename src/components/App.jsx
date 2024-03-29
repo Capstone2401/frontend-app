@@ -24,7 +24,7 @@ function App() {
   return (
     <div className="flex flex-col justify-between h-full p-10 bg-base-100">
       <header className="border-b border-b-neutral-600 pb-10">DataLoaf</header>
-      <main className="flex flex-1 px-20  h-full">
+      <main className="flex flex-1 justify-between px-20  h-full">
         <QueryBuilder
           handleSetQueryData={handleSetQueryData}
           handleSetLoading={handleSetLoading}
