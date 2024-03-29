@@ -4,19 +4,18 @@ import Metric from "./Metric";
 import Filter from "./Filter";
 import DateRange from "./DateRange";
 
-export default function QueryBuilder({ handleSetQueryData }) {
+export default function QueryBuilder({ handleSetQueryData, handleSetLoading }) {
   const [selectedEvent, setSelectedEvent] = useState({});
   const [selectedAggregation, setSelectedAggregation] = useState({});
   const [filter, setFilter] = useState({ events: {}, users: {} });
   const [dateRange, setDateRange] = useState("3M");
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
     let source = axios.CancelToken.source();
 
     const performRequest = async () => {
-      setLoading(true);
+      handleSetLoading(true);
 
       try {
         const response = await axios.post(
@@ -40,11 +39,11 @@ export default function QueryBuilder({ handleSetQueryData }) {
         handleSetQueryData(data);
 
         if (isMounted) {
-          setLoading(false);
+          handleSetLoading(false);
         }
       } catch (error) {
         if (!axios.isCancel(error) && isMounted) {
-          setLoading(false);
+          handleSetLoading(false);
         }
       }
     };
@@ -66,6 +65,7 @@ export default function QueryBuilder({ handleSetQueryData }) {
     filter,
     dateRange,
     handleSetQueryData,
+    handleSetLoading,
   ]);
 
   const handleSetFilter = (newFilters) => {
@@ -104,7 +104,7 @@ export default function QueryBuilder({ handleSetQueryData }) {
   };
 
   return (
-    <section className="w-1/4 rounded-md border border-black shadow-2xl flex flex-col justify-start p-10 bg-base-100">
+    <section className="w-1/4 rounded-sm flex flex-col justify-start p-10 bg-base-100 border-r border-r-neutral-600">
       <article>
         <h2>Metric</h2>
         <Metric
