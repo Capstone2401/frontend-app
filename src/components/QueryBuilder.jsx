@@ -106,6 +106,9 @@ export default function QueryBuilder({ handleSetQueryData, handleSetLoading }) {
   return (
     <section className="w-1/4 rounded-sm flex flex-col justify-start p-10 bg-base-100 border-r border-r-neutral-600">
       <article>
+        <DateRange handleSetDateRange={handleSetDateRange} />
+      </article>
+      <article>
         <h2>Metric</h2>
         <Metric
           selectedEvent={selectedEvent}
@@ -118,9 +121,6 @@ export default function QueryBuilder({ handleSetQueryData, handleSetLoading }) {
       </article>
       <article className="filters">
         <Filter handleSetFilter={handleSetFilter} filter={filter} />
-      </article>
-      <article className="date-picker">
-        <DateRange handleSetDateRange={handleSetDateRange} />
       </article>
     </section>
   );

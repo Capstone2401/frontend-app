@@ -18,7 +18,7 @@ export default function FilterDropdownOption({
               {attrData[attribute].map((value) => (
                 <li
                   key={value}
-                  className={`${filter[attribute] && filter[attribute].includes(value) ? "bg-neutral-800" : ""} my-1.5 rounded-lg`}
+                  className={`${filter[attribute] && filter[attribute].includes(value) ? "bg-white bg-opacity-10" : ""} my-1.5 rounded-lg`}
                 >
                   <a data-attribute={attribute} data-value={value}>
                     {value}

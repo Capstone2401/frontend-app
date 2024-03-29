@@ -3,5 +3,19 @@
 @tailwind utilities;
 
 .menu li > *:not(ul):not(.menu-title):not(details):active{
-  @apply bg-none;
+  @apply bg-white hover:bg-opacity-20;
+}
+
+body {
+  background-color: white;
+  height: 100vh;
+}
+
+#root {
+  height: 100%;
+}
+
+.recharts-wrapper {
+  padding: 0;
+  margin: 0 auto;
 }
