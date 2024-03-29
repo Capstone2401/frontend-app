@@ -27,12 +27,15 @@ export default function FilterDropDown({ items, handleSetFilter, filter }) {
 
   return (
     <div className="dropdown dropdown-right">
-      <label tabIndex={0} className="btn m-1 w-52 bg-neutral-600">
+      <label
+        tabIndex={0}
+        className="btn bg-base-300 hover:bg-white hover:bg-opacity-5  p-3 mx-1 w-36"
+      >
         Filter
       </label>
       <ul
         tabIndex={0}
-        className="menu bg-base-200 w-56 rounded-md text-white dropdown-content z-[1]"
+        className="menu bg-base-200 border border-neutral-700 w-56 rounded-md text-white dropdown-content z-[1]"
         onClick={processFilterSelections}
       >
         <FilterDropdownOptions
