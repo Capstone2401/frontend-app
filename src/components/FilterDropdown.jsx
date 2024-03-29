@@ -16,7 +16,13 @@ export default function FilterDropDown({ items, handleSetFilter, filter }) {
       [attr]: value,
     };
 
-    handleSetFilter(newFilters);
+    if (attr in eventAttrData) {
+      handleSetFilter({ events: { ...newFilters } });
+    }
+
+    if (attr in userAttrData) {
+      handleSetFilter({ users: { ...newFilters } });
+    }
   };
 
   return (
@@ -34,14 +40,14 @@ export default function FilterDropDown({ items, handleSetFilter, filter }) {
           attrData={eventAttrData}
           attributes={Object.keys(eventAttrData)}
           handleSetFilter={handleSetFilter}
-          filter={filter}
+          filter={filter.events}
         />
         <FilterDropdownOptions
           type={"users"}
           attrData={userAttrData}
           attributes={Object.keys(userAttrData)}
           handleSetFilter={handleSetFilter}
-          filter={filter}
+          filter={filter.users}
         />
       </ul>
     </div>
