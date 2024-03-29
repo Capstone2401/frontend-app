@@ -1,0 +1,9 @@
+{
+  "title": "Events",
+  "predefined": [
+    {
+      "event": "all",
+      "display": "All events"
+    }
+  ]
+}

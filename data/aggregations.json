@@ -1,0 +1,35 @@
+{
+  "title": "Aggregations",
+  "predefined": [
+    {
+      "category": "events",
+      "aggregation": "total",
+      "display": "Total Events"
+    },
+    {
+      "category": "users",
+      "aggregation": "total",
+      "display": "Unique Users"
+    },
+    {
+      "category": "events",
+      "aggregation": "average",
+      "display": "Per user: Average"
+    },
+    {
+      "category": "events",
+      "aggregation": "median",
+      "display": "Per user: Median"
+    },
+    {
+      "category": "events",
+      "aggregation": "minimum",
+      "display": "Per user: Minimum"
+    },
+    {
+      "category": "events",
+      "aggregation": "maximum",
+      "display": "Per user: Maximum"
+    }
+  ]
+}
