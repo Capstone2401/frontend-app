@@ -7,7 +7,7 @@ import DateRange from "./DateRange";
 export default function QueryBuilder({ handleSetQueryData }) {
   const [selectedEvent, setSelectedEvent] = useState({});
   const [selectedAggregation, setSelectedAggregation] = useState({});
-  const [filter, setFilter] = useState({});
+  const [filter, setFilter] = useState({ events: {}, users: {} });
   const [dateRange, setDateRange] = useState("3M");
   const [loading, setLoading] = useState(false);
 
@@ -19,15 +19,19 @@ export default function QueryBuilder({ handleSetQueryData }) {
       setLoading(true);
 
       try {
-        const response = await axios.get(
+        const response = await axios.post(
           `/api/query/${selectedAggregation.category}`,
           {
+            filters: filter,
+            eventName: selectedEvent.title,
+            aggregationType: selectedAggregation.aggregation,
+            category: selectedAggregation.category,
+            dateRange: dateRange,
+          },
+          {
             cancelToken: source.token,
-            params: {
-              eventName: selectedEvent.title,
-              filters: filter,
-              aggregationType: selectedAggregation.aggregation,
-              dateRange: dateRange,
+            headers: {
+              "Content-Type": "application/json", // Make sure to set appropriate content type
             },
           },
         );
@@ -66,17 +70,22 @@ export default function QueryBuilder({ handleSetQueryData }) {
 
   const handleSetFilter = (newFilters) => {
     let filterCopy = JSON.parse(JSON.stringify(filter));
+    const category = Object.keys(newFilters)[0];
+    const data = Object.values(newFilters)[0];
 
-    for (const attr in newFilters) {
-      const newValue = newFilters[attr];
+    for (const attr in data) {
+      const newValue = data[attr];
 
-      filterCopy[attr] = filterCopy[attr] || [];
-      const currentValues = filterCopy[attr];
+      filterCopy[category][attr] = filterCopy[category][attr] || [];
+      const currentValues = filterCopy[category][attr];
 
       if (!currentValues.includes(newValue)) {
         currentValues.push(newValue);
       } else {
         currentValues.splice(currentValues.indexOf(newValue), 1);
+        if (currentValues.length < 1) {
+          delete filterCopy[category][attr]; // remove any empty filter arrays
+        }
       }
     }
 
