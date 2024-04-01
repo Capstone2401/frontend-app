@@ -19,8 +19,8 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
 
       const body = {
         filters,
-        eventName: selectedEvent.event === "all" ? null : selectedEvent.event,
-        aggregationType: selectedAggregation.aggregation,
+        eventName: selectedEvent.value === "all" ? null : selectedEvent.value,
+        aggregationType: selectedAggregation.value,
         category: selectedAggregation.category,
         dateRange,
       };
@@ -44,7 +44,7 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
     };
 
     const debouncedRequest = setTimeout(async () => {
-      if (!selectedEvent.event || !selectedAggregation.aggregation) return;
+      if (!selectedEvent.value || !selectedAggregation.value) return;
       await performRequest();
     }, 1500);
 

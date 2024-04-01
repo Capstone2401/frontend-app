@@ -2,7 +2,7 @@
   "title": "Events",
   "predefined": [
     {
-      "event": "all",
+      "value": "all",
       "display": "All events"
     }
   ]
