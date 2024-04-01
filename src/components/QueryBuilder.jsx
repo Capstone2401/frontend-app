@@ -86,9 +86,8 @@ export default function QueryBuilder({ requestState, handleUpdateQueryState }) {
   };
 
   const handleSetDateRange = (e) => {
-    const timeUnit = e.target.dataset.time;
-
-    setDateRange(() => timeUnit);
+    const selection = e.target.dataset.range;
+    setDateRange(selection);
   };
 
   const createSelectionHandler = (setter) => {

@@ -1,9 +1,8 @@
 import DateButton from "./DateButton";
 
-export default function DateRange({ handleSetDateRange }) {
+export default function DateRange({ handleSetDateRange, dateRange }) {
   const BACKEND_ACCEPTED_DATE_RANGES = [
     "Today",
-    "Yesterday",
     "7D",
     "30D",
     "3M",
@@ -15,10 +14,10 @@ export default function DateRange({ handleSetDateRange }) {
     // TODO Indicate that the currently active previous is selected visually.
     <div
       className="btn-group btn-group-verticallg:btn-group-horizontal p-5 w-fit"
-      onClick={() => handleSetDateRange()}
+      onClick={handleSetDateRange}
     >
       {BACKEND_ACCEPTED_DATE_RANGES.map((option) => (
-        <DateButton key={option} content={option} />
+        <DateButton key={option} content={option} dateRange={dateRange} />
       ))}
     </div>
   );
