@@ -8,7 +8,7 @@ export default function QueryBuilder({ handleSetQueryData, handleSetLoading }) {
   const [selectedEvent, setSelectedEvent] = useState({});
   const [selectedAggregation, setSelectedAggregation] = useState({});
   const [filter, setFilter] = useState({ events: {}, users: {} });
-  const [dateRange, setDateRange] = useState("3M");
+  const [dateRange, setDateRange] = useState("Today");
 
   useEffect(() => {
     let isMounted = true;
@@ -92,7 +92,10 @@ export default function QueryBuilder({ handleSetQueryData, handleSetLoading }) {
     setFilter(() => filterCopy);
   };
 
-  const handleSetDateRange = (dateRange) => setDateRange(() => dateRange);
+  const handleSetDateRange = (e) => {
+    const selection = e.target.dataset.range;
+    setDateRange(selection);
+  };
 
   const createSelectionHandler = (setter) => {
     return (item, dropDown) => {
@@ -106,7 +109,10 @@ export default function QueryBuilder({ handleSetQueryData, handleSetLoading }) {
   return (
     <section className="w-1/4 rounded-sm flex flex-col justify-start p-10 bg-base-100 border-r border-r-neutral-600">
       <article>
-        <DateRange handleSetDateRange={handleSetDateRange} />
+        <DateRange
+          handleSetDateRange={handleSetDateRange}
+          dateRange={dateRange}
+        />
       </article>
       <article>
         <h2>Metric</h2>

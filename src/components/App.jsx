@@ -13,7 +13,7 @@ function App() {
   }, []);
 
   const handleSetQueryData = useCallback((data) => {
-    const copy = [...data];
+    const copy = [...data].reverse();
     copy.forEach((record) => {
       record.value = record.calculated_value;
       delete record.calculated_value;
