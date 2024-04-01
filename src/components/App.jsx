@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import useQueryReducer from "../reducers/query";
+import { useQueryReducer } from "../hooks/query";
 import "../App.css";
 
 import QueryBuilder from "./QueryBuilder";
