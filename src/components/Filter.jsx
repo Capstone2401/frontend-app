@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
 import FilterDropdown from "./FilterDropdown";
-import axios from "axios";
+import InfoService from "../services/info";
 
-export default function Filter({ handleSetFilter, filter }) {
+export default function Filter({ handleSetFilter, filters }) {
   const [attributes, setAttributes] = useState({});
 
   useEffect(() => {
-    const fetchAttributes = async () => {
+    const getAllAttributes = async () => {
       try {
-        const response = await axios.get("/api/info/attributes");
-        setAttributes(response.data);
+        const response = await InfoService.getAllAttributes();
+        setAttributes(response);
       } catch (error) {
         console.error(error);
       }
     };
 
-    fetchAttributes();
+    getAllAttributes();
   }, []);
 
   return (
@@ -24,7 +24,7 @@ export default function Filter({ handleSetFilter, filter }) {
         items={attributes}
         text={"Filter"}
         handleSetFilter={handleSetFilter}
-        filter={filter}
+        filters={filters}
       />
     </div>
   );

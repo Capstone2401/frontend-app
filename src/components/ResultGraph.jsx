@@ -33,7 +33,7 @@ export default function Graph({ queryData }) {
   const parentRef = useRef(null);
 
   const getTimeUnit = (queryData) => {
-    if (queryData.length < 1) return;
+    if (!queryData || queryData.length < 1) return;
     const record = queryData[0];
 
     switch (true) {
@@ -46,7 +46,7 @@ export default function Graph({ queryData }) {
     }
   };
 
-  let timeUnit = getTimeUnit(queryData);
+  const timeUnit = getTimeUnit(queryData);
 
   return (
     <ResponsiveContainer width="70%" height="70%" ref={parentRef}>
