@@ -28,7 +28,7 @@ export default function QueryBuilder({ requestState, handleUpdateQueryState }) {
       const options = {
         cancelToken: source.token,
         headers: {
-          "Content-Type": "application/json", // Make sure to set appropriate content type
+          "Content-Type": "application/json",
         },
       };
 
@@ -62,7 +62,7 @@ export default function QueryBuilder({ requestState, handleUpdateQueryState }) {
   ]);
 
   const handleSetFilter = (newFilters) => {
-    let filterCopy = JSON.parse(JSON.stringify(filters));
+    const filterCopy = JSON.parse(JSON.stringify(filters));
     const category = Object.keys(newFilters)[0];
     const data = Object.values(newFilters)[0];
 

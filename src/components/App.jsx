@@ -21,7 +21,7 @@ function App() {
       <main className="flex flex-1 justify-between px-20  h-full">
         <QueryBuilder
           handleUpdateQueryState={handleUpdateQueryState}
-          requstState={queryState}
+          requestState={queryState}
         />
         <QueryResult
           queryData={queryState.data}
