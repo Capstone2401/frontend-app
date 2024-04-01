@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import aggregationOptions from "../../data/aggregations.json";
-import eventOptions from "../../data/events.json";
+import aggregationOptions from "../../data/dropdowns/aggregations.json";
+import eventOptions from "../../data/dropdowns/events.json";
 import InfoService from "../services/info";
 
 import Dropdown from "./Dropdown";
