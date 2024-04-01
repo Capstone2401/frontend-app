@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import QueryService from "../services/query";
 import Metric from "./Metric";
 import Filter from "./Filter";
 import DateRange from "./DateRange";
 
-export default function QueryBuilder({ requestState, handleUpdateQueryState }) {
+export default function QueryBuilder({ handleUpdateQueryState }) {
   const [selectedEvent, setSelectedEvent] = useState({});
   const [selectedAggregation, setSelectedAggregation] = useState({});
   const [filters, setFilters] = useState({ events: {}, users: {} });
   const [dateRange, setDateRange] = useState("Today");
 
   useEffect(() => {
-    let source = axios.CancelToken.source();
+    let controller = new AbortController();
+    const { signal } = controller;
 
     const performRequest = async () => {
       handleUpdateQueryState({ type: "FETCH_START", loading: true });
@@ -26,7 +26,7 @@ export default function QueryBuilder({ requestState, handleUpdateQueryState }) {
       };
 
       const options = {
-        cancelToken: source.token,
+        signal,
         headers: {
           "Content-Type": "application/json",
         },
@@ -36,7 +36,8 @@ export default function QueryBuilder({ requestState, handleUpdateQueryState }) {
         const data = await QueryService.eventsBy(body, options);
         handleUpdateQueryState({ type: "FETCH_SUCCESS", payload: data });
       } catch (error) {
-        if (!axios.isCancel(error) && requestState.isLoading) {
+        // if error is not an aborted request
+        if (!signal.aborted) {
           handleUpdateQueryState({ type: "FETCH_ERROR", payload: error });
         }
       }
@@ -49,15 +50,14 @@ export default function QueryBuilder({ requestState, handleUpdateQueryState }) {
 
     return () => {
       clearTimeout(debouncedRequest);
-      source.cancel("Request cancelled due to component unmount");
-      source = axios.CancelToken.source();
+      controller.abort();
+      controller = new AbortController();
     };
   }, [
     selectedEvent,
     selectedAggregation,
     filters,
     dateRange,
-    requestState,
     handleUpdateQueryState,
   ]);
 
