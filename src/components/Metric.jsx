@@ -14,6 +14,7 @@ export default function Metric({
   const [availableEvents, setAvailableEvents] = useState([]);
   const defaultDisplayEvents = eventOptions.title;
   const defaultDisplayAggregations = aggregationOptions.title;
+  const aggregationTypes = aggregationOptions.predefined;
 
   useEffect(() => {
     const defaultAvailableEvents = eventOptions.default || [];
@@ -35,10 +36,6 @@ export default function Metric({
     };
     fetchEventNames();
   }, []);
-
-  // 'aggregation' values map to logic on the backend used to differntiate what type of query to execute
-  // any changes to these values will require corresponding changes to backend logic
-  const aggregationTypes = aggregationOptions.predefined;
 
   return (
     <div className="border border-neutral-500 rounded-md flex flex-col gap-8 w-full p-5">
