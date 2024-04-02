@@ -1,6 +1,7 @@
 {
   "title": "Events",
-  "predefined": [
+  "predefined": null,
+  "default": [
     {
       "value": "all",
       "display": "All events"

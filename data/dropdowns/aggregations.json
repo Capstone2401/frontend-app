@@ -31,5 +31,6 @@
       "value": "maximum",
       "display": "Per user: Maximum"
     }
-  ]
+  ],
+  "default": null
 }

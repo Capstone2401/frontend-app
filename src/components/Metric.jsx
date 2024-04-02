@@ -16,7 +16,7 @@ export default function Metric({
   const defaultDisplayAggregations = aggregationOptions.title;
 
   useEffect(() => {
-    const defaultAvailableEvents = eventOptions.predefined;
+    const defaultAvailableEvents = eventOptions.default || [];
     const fetchEventNames = async () => {
       try {
         const data = await InfoService.getAllEventNames();
@@ -24,7 +24,7 @@ export default function Metric({
         const formattedResponse = defaultAvailableEvents.concat(
           data.map((eventName) => ({
             display: eventName,
-            event: eventName,
+            value: eventName,
           })),
         );
 
