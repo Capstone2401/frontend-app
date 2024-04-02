@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import dateRanges from "../../data/dates/ranges";
 import QueryService from "../services/query";
 import Metric from "./Metric";
 import Filter from "./Filter";
@@ -7,8 +8,13 @@ import DateRange from "./DateRange";
 export default function QueryBuilder({ handleUpdateQueryState }) {
   const [selectedEvent, setSelectedEvent] = useState({});
   const [selectedAggregation, setSelectedAggregation] = useState({});
-  const [filters, setFilters] = useState({ events: {}, users: {} });
-  const [dateRange, setDateRange] = useState("Today");
+  const [selectedFilters, setSelectedFilters] = useState({
+    events: {},
+    users: {},
+  });
+  const [selecteDateRange, setSelectedDateRange] = useState(
+    dateRanges.default || {},
+  );
 
   useEffect(() => {
     let controller = new AbortController();
@@ -18,11 +24,14 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
       handleUpdateQueryState({ type: "FETCH_START", loading: true });
 
       const body = {
-        filters,
+        filters: selectedFilters,
         eventName: selectedEvent.value === "all" ? null : selectedEvent.value,
         aggregationType: selectedAggregation.value,
         category: selectedAggregation.category,
-        dateRange,
+        dateRange: {
+          previous: selecteDateRange.previous,
+          timeUnit: selecteDateRange.unit,
+        },
       };
 
       const options = {
@@ -56,13 +65,13 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
   }, [
     selectedEvent,
     selectedAggregation,
-    filters,
-    dateRange,
+    selectedFilters,
+    selecteDateRange,
     handleUpdateQueryState,
   ]);
 
-  const handleSetFilter = (newFilters) => {
-    const filterCopy = JSON.parse(JSON.stringify(filters));
+  const handleSetSelectedFilters = (newFilters) => {
+    const filterCopy = JSON.parse(JSON.stringify(selectedFilters));
     const category = Object.keys(newFilters)[0];
     const data = Object.values(newFilters)[0];
 
@@ -82,15 +91,15 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
       }
     }
 
-    setFilters(() => filterCopy);
+    setSelectedFilters(() => filterCopy);
   };
 
-  const handleSetDateRange = (e) => {
-    const selection = e.target.dataset.range;
-    setDateRange(selection);
+  const handleSetSelectedDateRange = (e) => {
+    const selection = e.target.dataset;
+    setSelectedDateRange(selection);
   };
 
-  const createSelectionHandler = (setter) => {
+  const createDropdownSelectionHandler = (setter) => {
     return (e) => {
       const dropDown = e.currentTarget;
       dropDown.blur();
@@ -104,8 +113,8 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
     <section className="w-1/4 rounded-sm flex flex-col justify-start p-10 bg-base-100 border-r border-r-neutral-600">
       <article>
         <DateRange
-          handleSetDateRange={handleSetDateRange}
-          dateRange={dateRange}
+          handleSetDateRange={handleSetSelectedDateRange}
+          selectedDateRange={selecteDateRange}
         />
       </article>
       <article>
@@ -113,14 +122,19 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
         <Metric
           selectedEvent={selectedEvent}
           selectedAggregation={selectedAggregation}
-          handleSetSelectedEvent={createSelectionHandler(setSelectedEvent)}
-          handleSetSelectedAggregation={createSelectionHandler(
+          handleSetSelectedEvent={createDropdownSelectionHandler(
+            setSelectedEvent,
+          )}
+          handleSetSelectedAggregation={createDropdownSelectionHandler(
             setSelectedAggregation,
           )}
         />
       </article>
       <article>
-        <Filter handleSetFilter={handleSetFilter} filters={filters} />
+        <Filter
+          handleSetSelectedFilters={handleSetSelectedFilters}
+          selectedFilters={selectedFilters}
+        />
       </article>
     </section>
   );
