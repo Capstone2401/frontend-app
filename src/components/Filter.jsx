@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import FilterDropdown from "./FilterDropdown";
 import InfoService from "../services/info";
 
-export default function Filter({ handleSetFilter, filters }) {
+export default function Filter({ handleSetSelectedFilters, selectedFilters }) {
   const [attributes, setAttributes] = useState({});
 
   useEffect(() => {
@@ -23,8 +23,8 @@ export default function Filter({ handleSetFilter, filters }) {
       <FilterDropdown
         items={attributes}
         text={"Filter"}
-        handleSetFilter={handleSetFilter}
-        filters={filters}
+        handleSetSelectedFilters={handleSetSelectedFilters}
+        selectedFilters={selectedFilters}
       />
     </div>
   );

@@ -1,6 +1,10 @@
 import FilterDropdownOptions from "./FilterDropdownOptions";
 
-export default function FilterDropDown({ items, handleSetFilter, filters }) {
+export default function FilterDropDown({
+  items,
+  handleSetSelectedFilters,
+  selectedFilters,
+}) {
   const eventAttrData = items.event;
   const userAttrData = items.user;
 
@@ -17,11 +21,11 @@ export default function FilterDropDown({ items, handleSetFilter, filters }) {
     };
 
     if (attr in eventAttrData) {
-      handleSetFilter({ events: { ...newFilters } });
+      handleSetSelectedFilters({ events: { ...newFilters } });
     }
 
     if (attr in userAttrData) {
-      handleSetFilter({ users: { ...newFilters } });
+      handleSetSelectedFilters({ users: { ...newFilters } });
     }
   };
 
@@ -42,15 +46,15 @@ export default function FilterDropDown({ items, handleSetFilter, filters }) {
           type={"events"}
           attrData={eventAttrData}
           attributes={Object.keys(eventAttrData)}
-          handleSetFilter={handleSetFilter}
-          filter={filters.events}
+          handleSetSelectedFilters={handleSetSelectedFilters}
+          selectedFilters={selectedFilters.events}
         />
         <FilterDropdownOptions
           type={"users"}
           attrData={userAttrData}
           attributes={Object.keys(userAttrData)}
-          handleSetFilter={handleSetFilter}
-          filter={filters.users}
+          handleSetFilter={handleSetSelectedFilters}
+          selectedFilters={selectedFilters.users}
         />
       </ul>
     </div>
