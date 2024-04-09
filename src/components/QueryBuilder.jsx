@@ -12,7 +12,7 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
     events: {},
     users: {},
   });
-  const [selecteDateRange, setSelectedDateRange] = useState(
+  const [selectedDateRange, setSelectedDateRange] = useState(
     dateRanges.default || {},
   );
 
@@ -29,8 +29,8 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
         aggregationType: selectedAggregation.value,
         category: selectedAggregation.category,
         dateRange: {
-          previous: selecteDateRange.previous,
-          timeUnit: selecteDateRange.unit,
+          previous: selectedDateRange.previous,
+          timeUnit: selectedDateRange.unit,
         },
       };
 
@@ -66,7 +66,7 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
     selectedEvent,
     selectedAggregation,
     selectedFilters,
-    selecteDateRange,
+    selectedDateRange,
     handleUpdateQueryState,
   ]);
 
@@ -114,7 +114,7 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
       <article>
         <DateRange
           handleSetDateRange={handleSetSelectedDateRange}
-          selectedDateRange={selecteDateRange}
+          selectedDateRange={selectedDateRange}
         />
       </article>
       <article>

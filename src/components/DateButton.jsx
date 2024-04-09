@@ -4,7 +4,6 @@ export default function DateButton({
   previous,
   selectedDateRange,
 }) {
-  // console.log(dateRange, display);
   return (
     <button
       data-display={display}

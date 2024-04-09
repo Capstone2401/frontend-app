@@ -1,5 +1,4 @@
 import ResultGraph from "./ResultGraph";
-import ResultTable from "./ResultTable";
 
 export default function QueryResult({ queryData, isLoading }) {
   if (isLoading) {
@@ -13,7 +12,6 @@ export default function QueryResult({ queryData, isLoading }) {
   return (
     <>
       <ResultGraph queryData={queryData} />
-      <ResultTable queryData={queryData} />
     </>
   );
 }
