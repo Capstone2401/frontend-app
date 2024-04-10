@@ -1,5 +1,8 @@
-import axios from "axios";
 import { useState, useEffect } from "react";
+import aggregationOptions from "../../data/dropdowns/aggregations.json";
+import eventOptions from "../../data/dropdowns/events.json";
+import InfoService from "../services/info";
+
 import Dropdown from "./Dropdown";
 
 export default function Metric({
@@ -9,14 +12,24 @@ export default function Metric({
   handleSetSelectedAggregation,
 }) {
   const [availableEvents, setAvailableEvents] = useState([]);
-  const defaultTitleEvents = "Events";
-  const defaultTitleAggregations = "Aggregation";
+  const defaultDisplayEvents = eventOptions.title;
+  const defaultDisplayAggregations = aggregationOptions.title;
+  const aggregationTypes = aggregationOptions.predefined;
 
   useEffect(() => {
+    const defaultAvailableEvents = eventOptions.default || [];
     const fetchEventNames = async () => {
       try {
-        const response = await axios.get("/api/info/eventNames");
-        setAvailableEvents(response.data.map((title) => ({ title })));
+        const data = await InfoService.getAllEventNames();
+
+        const formattedResponse = defaultAvailableEvents.concat(
+          data.map((eventName) => ({
+            display: eventName,
+            value: eventName,
+          })),
+        );
+
+        setAvailableEvents(formattedResponse);
       } catch (error) {
         console.error(error);
       }
@@ -24,22 +37,11 @@ export default function Metric({
     fetchEventNames();
   }, []);
 
-  // 'aggregation' values map to logic on the backend used to differntiate what type of query to execute
-  // any changes to these values will require corresponding changes to backend logic
-  const aggregationTypes = [
-    { category: "events", aggregation: "total", title: "Total Events" },
-    { category: "users", aggregation: "total", title: "Unique Users" },
-    { category: "events", aggregation: "average", title: "Per user: Average" },
-    { category: "events", aggregation: "median", title: "Per user: Median" },
-    { category: "events", aggregation: "minimum", title: "Per user: Minimum" },
-    { category: "events", aggregation: "maximum", title: "Per user: Maximum" },
-  ];
-
   return (
     <div className="border border-neutral-500 rounded-md flex flex-col gap-8 w-full p-5">
       <div>
         <Dropdown
-          defaultTitle={defaultTitleEvents}
+          defaultDisplay={defaultDisplayEvents}
           items={availableEvents}
           selection={selectedEvent}
           handleSetSelection={handleSetSelectedEvent}
@@ -47,7 +49,7 @@ export default function Metric({
       </div>
       <div>
         <Dropdown
-          defaultTitle={defaultTitleAggregations}
+          defaultDisplay={defaultDisplayAggregations}
           items={aggregationTypes}
           selection={selectedAggregation}
           handleSetSelection={handleSetSelectedAggregation}

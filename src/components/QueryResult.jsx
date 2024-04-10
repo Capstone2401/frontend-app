@@ -1,8 +1,7 @@
 import ResultGraph from "./ResultGraph";
-import ResultTable from "./ResultTable";
 
-export default function QueryResult({ queryData, loading }) {
-  if (loading) {
+export default function QueryResult({ queryData, isLoading }) {
+  if (isLoading) {
     return (
       <div className="m-auto">
         <p className="loading loading-spinner loading-lg text-primary"></p>
@@ -13,7 +12,6 @@ export default function QueryResult({ queryData, loading }) {
   return (
     <>
       <ResultGraph queryData={queryData} />
-      <ResultTable queryData={queryData} />
     </>
   );
 }

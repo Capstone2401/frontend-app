@@ -1,0 +1,10 @@
+{
+  "title": "Events",
+  "predefined": null,
+  "default": [
+    {
+      "value": "all",
+      "display": "All events"
+    }
+  ]
+}

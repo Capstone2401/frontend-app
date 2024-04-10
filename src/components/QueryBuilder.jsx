@@ -1,75 +1,77 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import dateRanges from "../../data/dates/ranges";
+import QueryService from "../services/query";
 import Metric from "./Metric";
 import Filter from "./Filter";
 import DateRange from "./DateRange";
 
-export default function QueryBuilder({ handleSetQueryData, handleSetLoading }) {
+export default function QueryBuilder({ handleUpdateQueryState }) {
   const [selectedEvent, setSelectedEvent] = useState({});
   const [selectedAggregation, setSelectedAggregation] = useState({});
-  const [filter, setFilter] = useState({ events: {}, users: {} });
-  const [dateRange, setDateRange] = useState("Today");
+  const [selectedFilters, setSelectedFilters] = useState({
+    events: {},
+    users: {},
+  });
+  const [selectedDateRange, setSelectedDateRange] = useState(
+    dateRanges.default || {},
+  );
 
   useEffect(() => {
-    let isMounted = true;
-    let source = axios.CancelToken.source();
+    let controller = new AbortController();
+    const { signal } = controller;
 
     const performRequest = async () => {
-      handleSetLoading(true);
+      handleUpdateQueryState({ type: "FETCH_START", loading: true });
+
+      const body = {
+        filters: selectedFilters,
+        eventName: selectedEvent.value === "all" ? null : selectedEvent.value,
+        aggregationType: selectedAggregation.value,
+        category: selectedAggregation.category,
+        dateRange: {
+          previous: selectedDateRange.previous,
+          timeUnit: selectedDateRange.unit,
+        },
+      };
+
+      const options = {
+        signal,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
 
       try {
-        const response = await axios.post(
-          `/api/query/${selectedAggregation.category}`,
-          {
-            filters: filter,
-            eventName: selectedEvent.title,
-            aggregationType: selectedAggregation.aggregation,
-            category: selectedAggregation.category,
-            dateRange: dateRange,
-          },
-          {
-            cancelToken: source.token,
-            headers: {
-              "Content-Type": "application/json", // Make sure to set appropriate content type
-            },
-          },
-        );
-
-        const data = response.data;
-        handleSetQueryData(data);
-
-        if (isMounted) {
-          handleSetLoading(false);
-        }
+        const data = await QueryService.eventsBy(body, options);
+        handleUpdateQueryState({ type: "FETCH_SUCCESS", payload: data });
       } catch (error) {
-        if (!axios.isCancel(error) && isMounted) {
-          handleSetLoading(false);
+        // if error is not an aborted request
+        if (!signal.aborted) {
+          handleUpdateQueryState({ type: "FETCH_ERROR", payload: error });
         }
       }
     };
 
     const debouncedRequest = setTimeout(async () => {
-      if (!selectedEvent.title || !selectedAggregation.title) return;
+      if (!selectedEvent.value || !selectedAggregation.value) return;
       await performRequest();
-    }, 2500);
+    }, 1500);
 
     return () => {
       clearTimeout(debouncedRequest);
-      isMounted = false;
-      source.cancel("Request cancelled due to component unmount");
-      source = axios.CancelToken.source();
+      controller.abort();
+      controller = new AbortController();
     };
   }, [
     selectedEvent,
     selectedAggregation,
-    filter,
-    dateRange,
-    handleSetQueryData,
-    handleSetLoading,
+    selectedFilters,
+    selectedDateRange,
+    handleUpdateQueryState,
   ]);
 
-  const handleSetFilter = (newFilters) => {
-    let filterCopy = JSON.parse(JSON.stringify(filter));
+  const handleSetSelectedFilters = (newFilters) => {
+    const filterCopy = JSON.parse(JSON.stringify(selectedFilters));
     const category = Object.keys(newFilters)[0];
     const data = Object.values(newFilters)[0];
 
@@ -89,19 +91,20 @@ export default function QueryBuilder({ handleSetQueryData, handleSetLoading }) {
       }
     }
 
-    setFilter(() => filterCopy);
+    setSelectedFilters(() => filterCopy);
   };
 
-  const handleSetDateRange = (e) => {
-    const selection = e.target.dataset.range;
-    setDateRange(selection);
+  const handleSetSelectedDateRange = (e) => {
+    const selection = e.target.dataset;
+    setSelectedDateRange(selection);
   };
 
-  const createSelectionHandler = (setter) => {
-    return (item, dropDown) => {
-      const selection = item;
-      dropDown.current.blur();
+  const createDropdownSelectionHandler = (setter) => {
+    return (e) => {
+      const dropDown = e.currentTarget;
+      dropDown.blur();
 
+      const selection = e.target.dataset;
       setter(selection);
     };
   };
@@ -110,8 +113,8 @@ export default function QueryBuilder({ handleSetQueryData, handleSetLoading }) {
     <section className="w-1/4 rounded-sm flex flex-col justify-start p-10 bg-base-100 border-r border-r-neutral-600">
       <article>
         <DateRange
-          handleSetDateRange={handleSetDateRange}
-          dateRange={dateRange}
+          handleSetDateRange={handleSetSelectedDateRange}
+          selectedDateRange={selectedDateRange}
         />
       </article>
       <article>
@@ -119,14 +122,19 @@ export default function QueryBuilder({ handleSetQueryData, handleSetLoading }) {
         <Metric
           selectedEvent={selectedEvent}
           selectedAggregation={selectedAggregation}
-          handleSetSelectedEvent={createSelectionHandler(setSelectedEvent)}
-          handleSetSelectedAggregation={createSelectionHandler(
+          handleSetSelectedEvent={createDropdownSelectionHandler(
+            setSelectedEvent,
+          )}
+          handleSetSelectedAggregation={createDropdownSelectionHandler(
             setSelectedAggregation,
           )}
         />
       </article>
-      <article className="filters">
-        <Filter handleSetFilter={handleSetFilter} filter={filter} />
+      <article>
+        <Filter
+          handleSetSelectedFilters={handleSetSelectedFilters}
+          selectedFilters={selectedFilters}
+        />
       </article>
     </section>
   );
