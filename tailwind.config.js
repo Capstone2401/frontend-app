@@ -6,6 +6,9 @@ export default {
       scale: {
         98: ".98",
       },
+      blur: {
+        xs: "0.30",
+      },
     },
   },
   plugins: [require("daisyui")],

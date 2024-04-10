@@ -39,7 +39,7 @@ export default function FilterDropDown({
       </label>
       <ul
         tabIndex={0}
-        className="menu bg-base-200 border border-neutral-700 w-56 rounded-md text-white dropdown-content z-[1]"
+        className="menu bg-base-300 border border-neutral-700 w-56 rounded-md text-white dropdown-content z-[1]"
         onClick={processFilterSelections}
       >
         <FilterDropdownOptions
