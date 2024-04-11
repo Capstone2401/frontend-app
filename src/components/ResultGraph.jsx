@@ -55,22 +55,16 @@ export default function Graph({ queryData }) {
       style={{ paddingTop: "4rem" }}
       ref={parentRef}
     >
-      <text
-        x={500 / 2}
-        y={20}
-        fill="white"
-        textAnchor="middle"
-        dominantBaseline="central"
-      >
-        <tspan
+      <div x={500 / 2} y={20} textAnchor="middle" dominantBaseline="central">
+        <div
           style={{
             color: "rgb(115 115 115)",
             fontStyle: "italic",
           }}
         >
           Result Window
-        </tspan>
-      </text>
+        </div>
+      </div>
       <LineChart
         width={500}
         height={400}
