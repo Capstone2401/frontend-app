@@ -38,23 +38,25 @@ export default function Metric({
   }, []);
 
   return (
-    <div className="border border-neutral-500 rounded-md flex flex-col gap-8 w-full p-5">
-      <div>
-        <Dropdown
-          defaultDisplay={defaultDisplayEvents}
-          items={availableEvents}
-          selection={selectedEvent}
-          handleSetSelection={handleSetSelectedEvent}
-        />
+    <>
+      <div className="border border-neutral-500 rounded-md flex flex-col gap-8 w-4/5 min-w-40 p-5">
+        <div>
+          <Dropdown
+            defaultDisplay={defaultDisplayEvents}
+            items={availableEvents}
+            selection={selectedEvent}
+            handleSetSelection={handleSetSelectedEvent}
+          />
+        </div>
+        <div>
+          <Dropdown
+            defaultDisplay={defaultDisplayAggregations}
+            items={aggregationTypes}
+            selection={selectedAggregation}
+            handleSetSelection={handleSetSelectedAggregation}
+          />
+        </div>
       </div>
-      <div>
-        <Dropdown
-          defaultDisplay={defaultDisplayAggregations}
-          items={aggregationTypes}
-          selection={selectedAggregation}
-          handleSetSelection={handleSetSelectedAggregation}
-        />
-      </div>
-    </div>
+    </>
   );
 }

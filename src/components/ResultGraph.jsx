@@ -46,18 +46,46 @@ export default function Graph({ queryData }) {
     }
   };
 
+  const formatQueryData = (queryData, timeUnit) => {
+    return queryData && Object.keys(queryData).length > 0
+      ? queryData.map((item) => ({
+          value: item.value,
+          [timeUnit]: item[timeUnit].replace("T", " ").replace("Z", ""),
+        }))
+      : null;
+  };
+
   const timeUnit = getTimeUnit(queryData);
+  const formattedQueryData = formatQueryData(queryData, timeUnit);
 
   return (
-    <ResponsiveContainer width="70%" height="70%" ref={parentRef}>
+    <ResponsiveContainer
+      width="60%"
+      height="70%"
+      style={{ paddingTop: "4rem" }}
+      ref={parentRef}
+    >
+      <div x={500 / 2} y={20} textAnchor="middle" dominantBaseline="central">
+        <div
+          style={{
+            color: "rgb(115 115 115)",
+            fontStyle: "italic",
+          }}
+        >
+          Result Window
+        </div>
+      </div>
       <LineChart
         width={500}
         height={400}
-        data={queryData}
+        data={formattedQueryData}
         style={{
-          backgroundColor: "##231f1f",
-          padding: "3rem",
+          backgroundColor:
+            "var(--fallback-b3, oklch(var(--b3) / var(--tw-bg-opacity)))",
           borderRadius: "0.375rem",
+          padding: "2rem",
+          marginTop: "1rem",
+          boxShadow: "0px 10px 25px -2px rgba(0,0,0,0.40)",
         }}
       >
         <Line type="monotone" dataKey="value" stroke="#F1D492" />

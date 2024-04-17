@@ -6,6 +6,9 @@ export default {
       scale: {
         98: ".98",
       },
+      blur: {
+        xs: "0.30",
+      },
     },
   },
   plugins: [require("daisyui")],
@@ -29,7 +32,7 @@ export default {
           secondary: "#07040c",
           accent: "#9D5517",
           neutral: "#F1D492",
-          "base-100": "#D68A2E",
+          "base-100": "#FFFFFF",
           info: "#93c5fd",
           success: "#c084fc",
           warning: "#c88400",

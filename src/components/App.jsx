@@ -4,6 +4,8 @@ import "../App.css";
 
 import QueryBuilder from "./QueryBuilder";
 import QueryResult from "./QueryResult";
+import Header from "./Header";
+import Footer from "./Footer";
 
 function App() {
   const [queryState, dispatch] = useQueryReducer();
@@ -16,16 +18,16 @@ function App() {
   );
 
   return (
-    <div className="flex flex-col justify-between h-full p-10 bg-base-100">
-      <header className="border-b border-b-neutral-600 pb-10">DataLoaf</header>
-      <main className="flex flex-1 justify-between px-20  h-full">
+    <div className="flex flex-col justify-between h-full px-8 py-6 bg-base-100">
+      <Header />
+      <main className="flex flex-1 xl:items-start xl:justify-between items-center xl:flex-row flex-col px-20 h-full">
         <QueryBuilder handleUpdateQueryState={handleUpdateQueryState} />
         <QueryResult
           queryData={queryState.data}
           isLoading={queryState.isLoading}
         />
       </main>
-      <footer>Copyright stuff 2024</footer>
+      <Footer />
     </div>
   );
 }
