@@ -46,7 +46,17 @@ export default function Graph({ queryData }) {
     }
   };
 
+  const formatQueryData = (queryData, timeUnit) => {
+    return queryData && Object.keys(queryData).length > 0
+      ? queryData.map((item) => ({
+          value: item.value,
+          [timeUnit]: item[timeUnit].replace("T", " ").replace("Z", ""),
+        }))
+      : null;
+  };
+
   const timeUnit = getTimeUnit(queryData);
+  const formattedQueryData = formatQueryData(queryData, timeUnit);
 
   return (
     <ResponsiveContainer
@@ -68,7 +78,7 @@ export default function Graph({ queryData }) {
       <LineChart
         width={500}
         height={400}
-        data={queryData}
+        data={formattedQueryData}
         style={{
           backgroundColor:
             "var(--fallback-b3, oklch(var(--b3) / var(--tw-bg-opacity)))",

@@ -1,12 +1,12 @@
 {
   "title": "Date Range",
   "predefined": [
-    { "display": "Today", "unit": "day", "previous": 1 },
+    { "display": "Today", "unit": "hour", "previous": 24 },
     { "display": "7D", "unit": "day", "previous": 7 },
     { "display": "30D", "unit": "day", "previous": 30 },
     { "display": "3M", "unit": "month", "previous": 3 },
     { "display": "6M", "unit": "month", "previous": 6 },
     { "display": "12M", "unit": "month", "previous": 12 }
   ],
-  "default": { "display": "Today", "unit": "day", "previous": 1 }
+  "default": { "display": "Today", "unit": "hour", "previous": 24 }
 }
