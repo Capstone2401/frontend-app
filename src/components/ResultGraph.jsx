@@ -12,7 +12,6 @@ import {
 
 const CustomTooltip = ({ active, payload, timeUnit, aggregationType }) => {
   if (active && payload && payload.length) {
-    console.log(payload[0]);
     return (
       <ResponsiveContainer
         className="custom-tooltip"
@@ -34,39 +33,21 @@ const CustomTooltip = ({ active, payload, timeUnit, aggregationType }) => {
 export default function Graph({ queryData }) {
   const parentRef = useRef(null);
 
-  const getTimeUnit = (queryData) => {
-    if (!queryData || queryData.length < 1) return;
-    const record = queryData[0];
+  const formatQueryDataValues = (values, timeUnit, aggregationType) => {
+    const formattedValues =
+      values.length > 0
+        ? values.map((item) => ({
+            [aggregationType]: item[aggregationType],
+            [timeUnit]: item[timeUnit].replace("T", " ").replace("Z", ""),
+          }))
+        : {};
 
-    switch (true) {
-      case !!record.hour:
-        return "hour";
-      case !!record.day:
-        return "day";
-      case !!record.month:
-        return "month";
-    }
+    return formattedValues;
   };
 
-  const getAggregation = (queryData) => {
-    if (!queryData || queryData.length < 1) return;
-    const record = queryData[0];
-    return record.aggregationType;
-  };
-
-  const formatQueryData = (queryData, timeUnit, aggregationType) => {
-    return queryData && Object.keys(queryData).length > 0
-      ? queryData.map((item) => ({
-          [aggregationType]: item[item.aggregationType],
-          [timeUnit]: item[timeUnit].replace("T", " ").replace("Z", ""),
-        }))
-      : null;
-  };
-
-  const timeUnit = getTimeUnit(queryData);
-  const aggregationType = getAggregation(queryData);
-  const formattedQueryData = formatQueryData(
-    queryData,
+  const { values, timeUnit, aggregationType } = queryData;
+  const formattedQueryData = formatQueryDataValues(
+    values,
     timeUnit,
     aggregationType,
   );
