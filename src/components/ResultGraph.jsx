@@ -83,7 +83,7 @@ export default function Graph({ queryData }) {
         <Line type="monotone" dataKey={aggregationType} stroke="#F1D492" />
         <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
         <XAxis dataKey={timeUnit} stroke="#ccc" />
-        {queryData ? <Legend /> : null}
+        {queryData.values.length > 0 ? <Legend /> : null}
         <YAxis dataKey={aggregationType} stroke="#ccc" />
         <Tooltip
           content={
