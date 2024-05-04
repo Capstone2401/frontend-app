@@ -55,9 +55,11 @@ export default function Graph({ queryData }) {
   return (
     <ResponsiveContainer
       width="60%"
+      minWidth="1000px"
       height="70%"
       style={{ paddingTop: "4rem" }}
       ref={parentRef}
+      className="mx-auto"
     >
       <div textAnchor="middle" dominantBaseline="central">
         <div

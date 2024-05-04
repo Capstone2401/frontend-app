@@ -19,7 +19,7 @@ export default function Filter({ handleSetSelectedFilters, selectedFilters }) {
   }, []);
 
   return (
-    <div className="w-3/4 m-auto">
+    <div className="xl:w-full w-[400px] m-auto">
       <FilterDropdown
         items={attributes}
         text={"Filter"}

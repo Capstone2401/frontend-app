@@ -110,7 +110,7 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
   };
 
   return (
-    <section className="xl:w-1/3 xl:pr-20 xl:py-10 pt-10 w-3/4 h-full rounded-sm flex flex-col justify-start gap-10 bg-base-100 xl:border-r border-r-neutral-600">
+    <section className="mr-0 xl:mr-20 min-w-[505px] max-w-1/4 xl:pr-20 xl:py-10 pt-10 h-full rounded-sm flex flex-col justify-start gap-10 bg-base-100 xl:border-r border-r-neutral-600">
       <article className="mx-auto">
         <DateRange
           handleSetDateRange={handleSetSelectedDateRange}
@@ -118,7 +118,7 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
         />
       </article>
       <article className="flex flex-col items-center">
-        <h2 className="w-4/5 pb-1">Metric</h2>
+        <h2 className="xl:w-full w-[400px] pb-1">Metric</h2>
         <Metric
           selectedEvent={selectedEvent}
           selectedAggregation={selectedAggregation}

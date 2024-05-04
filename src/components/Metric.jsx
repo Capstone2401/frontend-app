@@ -39,7 +39,7 @@ export default function Metric({
 
   return (
     <>
-      <div className="border border-neutral-600 bg-base-300 rounded-md flex flex-col gap-8 w-4/5 min-w-40 p-5">
+      <div className="border border-neutral-600 bg-base-300 rounded-md flex flex-col gap-8 xl:w-full w-[400px]  p-5">
         <div>
           <Dropdown
             defaultDisplay={defaultDisplayEvents}
