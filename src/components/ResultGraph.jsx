@@ -56,8 +56,9 @@ export default function Graph({ queryData }) {
     <ResponsiveContainer
       width="60%"
       minWidth="1000px"
-      height="70%"
-      style={{ paddingTop: "4rem" }}
+      height="65%"
+      minHeight="600px"
+      style={{ paddingTop: "2.5rem" }}
       ref={parentRef}
       className="mx-auto"
     >
