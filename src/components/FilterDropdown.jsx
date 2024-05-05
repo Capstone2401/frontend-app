@@ -1,31 +1,33 @@
 import FilterDropdownOptions from "./FilterDropdownOptions";
 
 export default function FilterDropDown({
+  owner,
   items,
   handleSetSelectedFilters,
   selectedFilters,
 }) {
-  const eventAttrData = items.event;
-  const userAttrData = items.user;
+  const eventAttrState = items.event;
+  const userAttrState = items.user;
 
-  if (!eventAttrData || !userAttrData) return null;
+  if (!eventAttrState || !userAttrState) return null;
 
   const processFilterSelections = (e) => {
-    const attr = e.target.getAttribute("data-attribute");
-    const value = e.target.getAttribute("data-value");
+    const attr = e.dataset.attribute;
+    const value = e.dataset.value;
+    const owner = e.dataset.owner;
 
-    if (!attr || !value) return;
+    if (!attr || !value || !owner) return;
 
     const newFilters = {
       [attr]: value,
     };
 
-    if (attr in eventAttrData) {
-      handleSetSelectedFilters({ events: { ...newFilters } });
+    if (attr in eventAttrState) {
+      handleSetSelectedFilters({ events: { ...newFilters }, owner });
     }
 
-    if (attr in userAttrData) {
-      handleSetSelectedFilters({ users: { ...newFilters } });
+    if (attr in userAttrState) {
+      handleSetSelectedFilters({ users: { ...newFilters }, owner });
     }
   };
 
@@ -41,21 +43,22 @@ export default function FilterDropDown({
         tabIndex={0}
         className="menu bg-base-300 border border-neutral-700 w-56 rounded-md text-white dropdown-content z-[1]"
         onClick={processFilterSelections}
+        data-owner={owner}
       >
-        <FilterDropdownOptions
-          type={"events"}
-          attrData={eventAttrData}
-          attributes={Object.keys(eventAttrData)}
-          handleSetSelectedFilters={handleSetSelectedFilters}
-          selectedFilters={selectedFilters.events}
-        />
-        <FilterDropdownOptions
-          type={"users"}
-          attrData={userAttrData}
-          attributes={Object.keys(userAttrData)}
-          handleSetFilter={handleSetSelectedFilters}
-          selectedFilters={selectedFilters.users}
-        />
+        <div className="max-h-[400px] overflow-auto">
+          <FilterDropdownOptions
+            type={"events"}
+            attrState={eventAttrState}
+            handleSetSelectedFilters={handleSetSelectedFilters}
+            selectedFilters={selectedFilters.events}
+          />
+          <FilterDropdownOptions
+            type={"users"}
+            attrState={userAttrState}
+            handleSetFilter={handleSetSelectedFilters.aggregations}
+            selectedFilters={selectedFilters}
+          />
+        </div>
       </ul>
     </div>
   );
