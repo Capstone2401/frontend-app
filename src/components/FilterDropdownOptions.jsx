@@ -3,9 +3,10 @@ export default function FilterDropdownOption({
   attrState,
   selectedFilters,
 }) {
+  if (!attrState) return null;
+
   const attributeNames = Object.keys(attrState);
 
-  if (!attributeNames || !attrState) return null;
   return (
     <>
       {attributeNames.map((attribute) => {

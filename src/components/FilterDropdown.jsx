@@ -9,8 +9,6 @@ export default function FilterDropDown({
   const eventAttrState = attributes.event;
   const userAttrState = attributes.user;
 
-  if (!eventAttrState || !userAttrState) return null;
-
   const processFilterSelections = (e) => {
     const attr = e.target.dataset.attribute;
     const value = e.target.dataset.value;
@@ -32,7 +30,7 @@ export default function FilterDropDown({
   };
 
   return (
-    <div className="dropdown dropdown-right">
+    <button className="dropdown dropdown-right">
       <label
         tabIndex={0}
         className="btn bg-base-300 hover:bg-white hover:bg-opacity-5  p-3 mx-1 w-36"
@@ -58,6 +56,6 @@ export default function FilterDropDown({
           />
         </div>
       </ul>
-    </div>
+    </button>
   );
 }
