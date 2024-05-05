@@ -1,33 +1,35 @@
 import { useState, useEffect } from "react";
 import dateRanges from "../../data/dates/ranges";
+import Query from "./Query";
 import QueryService from "../services/query";
-import Metric from "./Metric";
-import Filter from "./Filter";
 import DateRange from "./DateRange";
 
 export default function QueryBuilder({ handleUpdateQueryState }) {
-  const [selectedEvent, setSelectedEvent] = useState({});
-  const [selectedAggregation, setSelectedAggregation] = useState({});
-  const [selectedFilters, setSelectedFilters] = useState({
-    events: {},
-    users: {},
-  });
+  const [queryEls, setQueryEls] = useState([0]);
   const [selectedDateRange, setSelectedDateRange] = useState(
     dateRanges.default || {},
   );
+
+  const defaultQueryState = {
+    event: { value: "", display: "" },
+    aggregation: { value: "", display: "", category: "" },
+    filters: { events: {}, users: {} },
+  };
+
+  const [queryState, setQuery] = useState([defaultQueryState]);
 
   useEffect(() => {
     let controller = new AbortController();
     const { signal } = controller;
 
-    const performRequest = async () => {
+    const performRequest = async (data) => {
       handleUpdateQueryState({ type: "FETCH_START", loading: true });
 
       const body = {
-        filters: selectedFilters,
-        eventName: selectedEvent.value === "all" ? null : selectedEvent.value,
-        aggregationType: selectedAggregation.value,
-        category: selectedAggregation.category,
+        filters: data.filters,
+        eventName: data.event.value === "all" ? null : data.event.value,
+        aggregationType: data.aggregation.value,
+        category: data.aggregation.category,
         dateRange: {
           previous: selectedDateRange.previous,
           timeUnit: selectedDateRange.unit,
@@ -42,71 +44,125 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
       };
 
       try {
-        const data = await QueryService.eventsBy(body, options);
-        handleUpdateQueryState({ type: "FETCH_SUCCESS", payload: data });
+        const data = QueryService.eventsBy(body, options);
+        return data;
       } catch (error) {
-        // if error is not an aborted request
-        if (!signal.aborted) {
-          handleUpdateQueryState({ type: "FETCH_ERROR", payload: error });
-        }
+        console.error(error);
       }
     };
 
-    const debouncedRequest = setTimeout(async () => {
-      if (!selectedEvent.value || !selectedAggregation.value) return;
-      await performRequest();
-    }, 1500);
+    const debounceRequests = (dataList) => {
+      return new Promise((resolve) => {
+        const checkValues = async () => {
+          const allRequiredFieldsPresent = dataList.every(
+            (data) => data.event.value && data.aggregation.value,
+          );
+          if (allRequiredFieldsPresent) {
+            setTimeout(async () => {
+              const promises = dataList.map((data) => performRequest(data));
+              const data = await Promise.all(promises);
+              return resolve(data);
+            }, 500); // small debounce in case they spam filters
+          }
+        };
+
+        checkValues();
+      });
+    };
+
+    const fetchData = async () => {
+      try {
+        const queryData = await debounceRequests(queryState);
+        handleUpdateQueryState({ type: "FETCH_SUCCESS", payload: queryData });
+      } catch (error) {
+        if (!signal.aborted) {
+          handleUpdateQueryState({ type: "FETCH_ERROR", payload: error });
+        }
+        console.error(error);
+      }
+    };
+
+    fetchData();
 
     return () => {
-      clearTimeout(debouncedRequest);
-      controller.abort();
-      controller = new AbortController();
+      controller.abort(); // Abort ongoing calls if new one is made
+      controller = new AbortController(); // Reset controller for future requests
     };
-  }, [
-    selectedEvent,
-    selectedAggregation,
-    selectedFilters,
-    selectedDateRange,
-    handleUpdateQueryState,
-  ]);
+  }, [selectedDateRange, handleUpdateQueryState, queryState]);
+
+  const handleSetSelectedDateRange = (e) => {
+    const selection = e.target.dataset;
+    if (!selection.title) setSelectedDateRange(selection);
+  };
 
   const handleSetSelectedFilters = (newFilters) => {
-    const filterCopy = JSON.parse(JSON.stringify(selectedFilters));
-    const category = Object.keys(newFilters)[0];
-    const data = Object.values(newFilters)[0];
+    const owner = newFilters.owner;
+    delete newFilters.owner;
+
+    const stateCopy = JSON.parse(JSON.stringify(queryState));
+    stateCopy[owner] = stateCopy[owner] || {};
+    stateCopy[owner].filters = stateCopy[owner].filters || {};
+    const filterCopy = stateCopy[owner].filters;
+    const category = "events" in newFilters ? "events" : "users";
+    const data = newFilters[category];
 
     for (const attr in data) {
       const newValue = data[attr];
 
+      filterCopy[category] = filterCopy[category] || {};
       filterCopy[category][attr] = filterCopy[category][attr] || [];
-      const currentValues = filterCopy[category][attr];
 
-      if (!currentValues.includes(newValue)) {
-        currentValues.push(newValue);
+      if (!filterCopy[category][attr].includes(newValue)) {
+        filterCopy[category][attr].push(newValue);
       } else {
-        currentValues.splice(currentValues.indexOf(newValue), 1);
-        if (currentValues.length < 1) {
+        filterCopy[category][attr].splice(
+          filterCopy[category][attr].indexOf(newValue),
+          1,
+        );
+        if (filterCopy[category][attr].length < 1) {
           delete filterCopy[category][attr]; // remove any empty filter arrays
         }
       }
     }
 
-    setSelectedFilters(() => filterCopy);
+    stateCopy[owner].filters = filterCopy;
+    setQuery(() => stateCopy);
   };
 
-  const handleSetSelectedDateRange = (e) => {
+  const handleDropdownSelection = (e) => {
+    if (!e.currentTarget.dataset.owner) return;
+    const dropDown = e.currentTarget;
+    dropDown.blur();
+
     const selection = e.target.dataset;
-    setSelectedDateRange(selection);
+    const copyState = JSON.parse(JSON.stringify(queryState));
+    if (!copyState[dropDown.dataset.owner]) {
+      copyState[dropDown.dataset.owner] = {
+        event: {},
+        aggregation: {},
+        filters: {},
+      };
+    }
+    copyState[dropDown.dataset.owner][dropDown.dataset.dropdowntype] =
+      selection;
+    setQuery(copyState);
   };
 
-  const createDropdownSelectionHandler = (setter) => {
-    return (e) => {
-      const dropDown = e.currentTarget;
-      dropDown.blur();
+  const handleSetQueryEls = (_e, command, queryIdx) => {
+    const nextIdx = queryEls.length - 1;
+    if (command.add) {
+      setQueryEls(() => queryEls.concat(nextIdx + 1));
+    }
 
-      const selection = e.target.dataset;
-      setter(selection);
-    };
+    if (command.delete) {
+      const copyDisplay = [...queryEls];
+      const copyState = JSON.parse(JSON.stringify(queryState));
+      copyDisplay.splice(queryIdx, 1);
+      copyState.splice(queryIdx, 1);
+
+      setQueryEls(() => copyDisplay);
+      setQuery(() => copyState);
+    }
   };
 
   return (
@@ -117,25 +173,18 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
           selectedDateRange={selectedDateRange}
         />
       </article>
-      <article className="flex flex-col items-center">
-        <h2 className="xl:w-full w-[400px] pb-1">Metric</h2>
-        <Metric
-          selectedEvent={selectedEvent}
-          selectedAggregation={selectedAggregation}
-          handleSetSelectedEvent={createDropdownSelectionHandler(
-            setSelectedEvent,
-          )}
-          handleSetSelectedAggregation={createDropdownSelectionHandler(
-            setSelectedAggregation,
-          )}
-        />
-      </article>
-      <article>
-        <Filter
+      {queryEls.map((_, idx) => (
+        <Query
+          key={idx}
+          defaultQueryState={defaultQueryState}
+          queryState={queryState}
+          handleSetQueryEls={handleSetQueryEls}
           handleSetSelectedFilters={handleSetSelectedFilters}
-          selectedFilters={selectedFilters}
+          handleDropdownSelection={handleDropdownSelection}
+          queryIdx={idx}
+          queryCount={queryEls.length}
         />
-      </article>
+      ))}
     </section>
   );
 }
