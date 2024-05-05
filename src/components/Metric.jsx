@@ -6,6 +6,7 @@ import InfoService from "../services/info";
 import Dropdown from "./Dropdown";
 
 export default function Metric({
+  owner,
   selectedEvent,
   selectedAggregation,
   handleSetSelectedEvent,
@@ -42,6 +43,8 @@ export default function Metric({
       <div className="border border-neutral-600 bg-base-300 rounded-md flex flex-col gap-8 xl:w-full w-[400px]  p-5">
         <div>
           <Dropdown
+            dropDownType={"event"}
+            owner={owner}
             defaultDisplay={defaultDisplayEvents}
             items={availableEvents}
             selection={selectedEvent}
@@ -50,6 +53,8 @@ export default function Metric({
         </div>
         <div>
           <Dropdown
+            dropDownType={"aggregation"}
+            owner={owner}
             defaultDisplay={defaultDisplayAggregations}
             items={aggregationTypes}
             selection={selectedAggregation}
