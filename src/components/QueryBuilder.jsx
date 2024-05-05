@@ -55,7 +55,7 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
       return new Promise((resolve) => {
         const checkValues = async () => {
           const allRequiredFieldsPresent = dataList.every(
-            (data) => data.event.value && data.aggregation.value,
+            (data) => data?.event?.value && data?.aggregation?.value,
           );
           if (allRequiredFieldsPresent) {
             setTimeout(async () => {
@@ -85,8 +85,12 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
     fetchData();
 
     return () => {
-      controller.abort(); // Abort ongoing calls if new one is made
-      controller = new AbortController(); // Reset controller for future requests
+      try {
+        controller.abort(); // Abort ongoing calls if new one is made
+        controller = new AbortController(); // Reset controller for future requests
+      } catch (error) {
+        return;
+      }
     };
   }, [selectedDateRange, handleUpdateQueryState, queryState]);
 
@@ -103,24 +107,24 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
     stateCopy[owner] = stateCopy[owner] || {};
     stateCopy[owner].filters = stateCopy[owner].filters || {};
     const filterCopy = stateCopy[owner].filters;
-    const category = "events" in newFilters ? "events" : "users";
-    const data = newFilters[category];
 
-    for (const attr in data) {
-      const newValue = data[attr];
+    for (const category of ["events", "users"]) {
+      for (const attr in newFilters[category]) {
+        const newValue = newFilters[category][attr];
 
-      filterCopy[category] = filterCopy[category] || {};
-      filterCopy[category][attr] = filterCopy[category][attr] || [];
+        filterCopy[category] = filterCopy[category] || {};
+        filterCopy[category][attr] = filterCopy[category][attr] || [];
 
-      if (!filterCopy[category][attr].includes(newValue)) {
-        filterCopy[category][attr].push(newValue);
-      } else {
-        filterCopy[category][attr].splice(
-          filterCopy[category][attr].indexOf(newValue),
-          1,
-        );
-        if (filterCopy[category][attr].length < 1) {
-          delete filterCopy[category][attr]; // remove any empty filter arrays
+        if (!filterCopy[category][attr].includes(newValue)) {
+          filterCopy[category][attr].push(newValue);
+        } else {
+          filterCopy[category][attr].splice(
+            filterCopy[category][attr].indexOf(newValue),
+            1,
+          );
+          if (filterCopy[category][attr].length < 1) {
+            delete filterCopy[category][attr];
+          }
         }
       }
     }
