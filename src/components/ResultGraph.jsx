@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import React, { useRef } from "react";
 import {
   LineChart,
   Line,
@@ -10,7 +10,7 @@ import {
   Legend,
 } from "recharts";
 
-const CustomTooltip = ({ active, payload, timeUnit, aggregationType }) => {
+const CustomTooltip = ({ active, payload, label, aggregationType }) => {
   if (active && payload && payload.length) {
     return (
       <ResponsiveContainer
@@ -18,39 +18,42 @@ const CustomTooltip = ({ active, payload, timeUnit, aggregationType }) => {
         style={{
           padding: "5px",
           borderRadius: "0.375rem",
-          backgroundColor: "rgb(255, 255, 255, .10)",
+          backgroundColor: "rgba(255, 255, 255, 0.9)",
+          boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+          color: "black",
         }}
       >
-        <p>{`${timeUnit}: ${payload[0].payload[timeUnit]}`}</p>
-        <p>{`${aggregationType}: ${payload[0].payload[aggregationType]}`}</p>
+        <p>{`${label}`}</p>
+        {payload.map((item, index) => (
+          <p key={index}>{`${aggregationType}: ${item.value}`}</p>
+        ))}
       </ResponsiveContainer>
     );
   }
-
-  return null;
 };
 
-export default function Graph({ queryData }) {
+const Graph = ({ queryData }) => {
   const parentRef = useRef(null);
 
-  const formatQueryDataValues = (values, timeUnit, aggregationType) => {
-    const formattedValues =
-      values.length > 0
-        ? values.map((item) => ({
-            [aggregationType]: item[aggregationType],
-            [timeUnit]: item[timeUnit].replace("T", " ").replace("Z", ""),
-          }))
-        : {};
+  const timeUnit = queryData[0].timeUnit;
+
+  const formatQueryDataValues = (dataItem) => {
+    if (!dataItem.values || dataItem.values.length < 1) return;
+    const formattedValues = dataItem.values.map((item) => ({
+      [timeUnit]: item[timeUnit].replace("T", " ").replace("Z", ""),
+      [dataItem.aggregationType]: item[dataItem.aggregationType],
+    }));
 
     return formattedValues;
   };
 
-  const { values, timeUnit, aggregationType } = queryData;
-  const formattedQueryData = formatQueryDataValues(
-    values,
-    timeUnit,
-    aggregationType,
-  );
+  const colorMap = [
+    "#F1D492", // Similar to the provided color
+    "#FFA200", // Brighter orange
+    "#ff6000", // Darker orange
+    "#724500", // Deep brown
+    "#ffff00", // Bright yellow
+  ];
 
   return (
     <ResponsiveContainer
@@ -73,7 +76,6 @@ export default function Graph({ queryData }) {
         </div>
       </div>
       <LineChart
-        data={formattedQueryData}
         style={{
           backgroundColor:
             "var(--fallback-b3, oklch(var(--b3) / var(--tw-bg-opacity)))",
@@ -83,20 +85,38 @@ export default function Graph({ queryData }) {
           boxShadow: "0px 10px 25px -2px rgba(0,0,0,0.40)",
         }}
       >
-        <Line type="monotone" dataKey={aggregationType} stroke="#F1D492" />
         <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-        <XAxis dataKey={timeUnit} stroke="#ccc" />
-        {queryData.values.length > 0 ? <Legend /> : null}
-        <YAxis dataKey={aggregationType} stroke="#ccc" />
+        <XAxis
+          dataKey={timeUnit}
+          stroke="#ccc"
+          allowDuplicatedCategory={false}
+        />
+        <YAxis stroke="#ccc" dataKey={queryData.aggregationType} />
         <Tooltip
           content={
             <CustomTooltip
               timeUnit={timeUnit}
-              aggregationType={aggregationType}
+              aggregationType={queryData[0].aggregationType}
             />
           }
         />
+        {queryData.map((dataItem, index) => {
+          return (
+            <Line
+              name={`Query ${index + 1 > 1 ? index + 1 : ""}`}
+              key={index}
+              type="monotone"
+              dataKey={dataItem.aggregationType}
+              data={formatQueryDataValues(dataItem)}
+              stroke={colorMap[index]} // random color
+            />
+          );
+        })}
+        {/* show legend if any query data */}
+        {queryData[0].values.length > 0 ? <Legend /> : null}{" "}
       </LineChart>
     </ResponsiveContainer>
   );
-}
+};
+
+export default Graph;
