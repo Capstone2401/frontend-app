@@ -2,19 +2,19 @@ import FilterDropdownOptions from "./FilterDropdownOptions";
 
 export default function FilterDropDown({
   owner,
-  items,
+  attributes,
   handleSetSelectedFilters,
   selectedFilters,
 }) {
-  const eventAttrState = items.event;
-  const userAttrState = items.user;
+  const eventAttrState = attributes.event;
+  const userAttrState = attributes.user;
 
   if (!eventAttrState || !userAttrState) return null;
 
   const processFilterSelections = (e) => {
-    const attr = e.dataset.attribute;
-    const value = e.dataset.value;
-    const owner = e.dataset.owner;
+    const attr = e.target.dataset.attribute;
+    const value = e.target.dataset.value;
+    const owner = e.currentTarget.dataset.owner;
 
     if (!attr || !value || !owner) return;
 
@@ -49,14 +49,12 @@ export default function FilterDropDown({
           <FilterDropdownOptions
             type={"events"}
             attrState={eventAttrState}
-            handleSetSelectedFilters={handleSetSelectedFilters}
             selectedFilters={selectedFilters.events}
           />
           <FilterDropdownOptions
             type={"users"}
             attrState={userAttrState}
-            handleSetFilter={handleSetSelectedFilters.aggregations}
-            selectedFilters={selectedFilters}
+            selectedFilters={selectedFilters.users}
           />
         </div>
       </ul>

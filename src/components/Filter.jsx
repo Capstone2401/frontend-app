@@ -26,7 +26,7 @@ export default function Filter({
     <div className="mt-4 xl:w-full w-[400px] m-auto">
       <FilterDropdown
         owner={owner}
-        items={attributes}
+        attributes={attributes}
         text={"Filter"}
         handleSetSelectedFilters={handleSetSelectedFilters}
         selectedFilters={selectedFilters}

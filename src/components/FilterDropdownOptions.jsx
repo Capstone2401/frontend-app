@@ -5,7 +5,7 @@ export default function FilterDropdownOption({
 }) {
   const attributeNames = Object.keys(attrState);
 
-  if (!attributeNames || !attrState || !selectedFilters) return null;
+  if (!attributeNames || !attrState) return null;
   return (
     <>
       {attributeNames.map((attribute) => {
@@ -21,7 +21,7 @@ export default function FilterDropdownOption({
                   return (
                     <li
                       key={value}
-                      className={`${selectedFilters[attribute] && selectedFilters[attribute].includes(value) ? "bg-white bg-opacity-10" : ""} my-1.5 rounded-lg`}
+                      className={`${selectedFilters && selectedFilters[attribute] && selectedFilters[attribute].includes(value) ? "bg-white bg-opacity-10" : ""} my-1.5 rounded-lg`}
                     >
                       <a data-attribute={attribute} data-value={value}>
                         {value}

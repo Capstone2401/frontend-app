@@ -16,7 +16,7 @@ export default function Dropdown({
         tabIndex={0}
         className="px-4 py-2 text-primary bg-primary bg-opacity-15 hover:bg-primary hover:bg-opacity-40 hover:cursor-pointer active:scale-98 transition transition-duration-300 rounded-md"
       >
-        <p>{selection.display || defaultDisplay}</p>
+        <p>{selection?.display || defaultDisplay}</p>
       </div>
       <ul
         tabIndex={0}
