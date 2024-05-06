@@ -170,7 +170,7 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
   };
 
   return (
-    <section className="mr-0 xl:mr-20 min-w-[505px] max-w-1/4 xl:pr-20 xl:py-10 pt-10 h-full rounded-sm flex flex-col justify-start gap-10 bg-base-100 xl:border-r border-r-neutral-600">
+    <section className="mr-0 xl:mr-20 min-w-[505px] max-w-1/4 xl:pr-20 xl:py-10 pt-10 xl:h-full h-[1000px] rounded-sm flex flex-col justify-start gap-10 bg-base-100 xl:border-r border-r-neutral-600">
       <article className="mx-auto">
         <DateRange
           handleSetDateRange={handleSetSelectedDateRange}
