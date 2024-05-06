@@ -25,7 +25,9 @@ const CustomTooltip = ({ active, payload, label, aggregationType }) => {
       >
         <p>{`${label}`}</p>
         {payload.map((item, index) => (
-          <p key={index}>{`${aggregationType}: ${item.value}`}</p>
+          <p
+            key={index}
+          >{`Query ${index + 1} ${aggregationType}: ${item.value}`}</p>
         ))}
       </ResponsiveContainer>
     );
@@ -51,8 +53,6 @@ const Graph = ({ queryData }) => {
     "#F1D492", // Similar to the provided color
     "#FFA200", // Brighter orange
     "#ff6000", // Darker orange
-    "#724500", // Deep brown
-    "#ffff00", // Bright yellow
   ];
 
   return (
@@ -60,7 +60,7 @@ const Graph = ({ queryData }) => {
       width="60%"
       minWidth="1000px"
       height="65%"
-      minHeight="600px"
+      minHeight="700px"
       style={{ paddingTop: "2.5rem" }}
       ref={parentRef}
       className="mx-auto"
@@ -103,7 +103,7 @@ const Graph = ({ queryData }) => {
         {queryData.map((dataItem, index) => {
           return (
             <Line
-              name={`Query ${index + 1 > 1 ? index + 1 : ""}`}
+              name={`Query${index + 1 > 1 ? ": " + Number(index + 1) + " " : ": "}${dataItem.aggregationType}`}
               key={index}
               type="monotone"
               dataKey={dataItem.aggregationType}
