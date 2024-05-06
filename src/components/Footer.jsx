@@ -4,7 +4,10 @@ export default function Footer() {
       <nav>
         <ul className="flex flex-1 gap-3 items-end xl:justify-end xl:flex-row flex-col">
           <li>
-            <a href="#" className="hover:text-white">
+            <a
+              href="https://data-loaf.com/docs/category/api"
+              className="hover:text-white"
+            >
               Docs
             </a>
           </li>
