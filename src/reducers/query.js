@@ -1,10 +1,6 @@
 const handleSetQueryData = (data) => {
-  const copy = JSON.parse(JSON.stringify(data)).reverse();
-  copy.forEach((record) => {
-    record.value = record.calculated_value;
-    delete record.calculated_value;
-  });
-
+  const copy = JSON.parse(JSON.stringify(data));
+  copy.values.reverse();
   return copy;
 };
 
