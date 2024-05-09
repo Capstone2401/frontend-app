@@ -5,7 +5,7 @@ function useQueryReducer() {
   const initialState = {
     isLoading: false,
     error: null,
-    data: { aggregationType: null, timeUnit: null, values: {} },
+    data: [{ aggregationType: null, timeUnit: null, values: [] }],
   };
 
   const [state, dispatch] = useReducer(queryReducer, initialState);

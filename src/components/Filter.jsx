@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import FilterDropdown from "./FilterDropdown";
 import InfoService from "../services/info";
 
-export default function Filter({ handleSetSelectedFilters, selectedFilters }) {
+export default function Filter({
+  handleSetSelectedFilters,
+  selectedFilters,
+  owner,
+}) {
   const [attributes, setAttributes] = useState({});
 
   useEffect(() => {
@@ -19,9 +23,10 @@ export default function Filter({ handleSetSelectedFilters, selectedFilters }) {
   }, []);
 
   return (
-    <div className="w-3/4 m-auto">
+    <div className="mt-4 xl:w-full w-[400px] m-auto">
       <FilterDropdown
-        items={attributes}
+        owner={owner}
+        attributes={attributes}
         text={"Filter"}
         handleSetSelectedFilters={handleSetSelectedFilters}
         selectedFilters={selectedFilters}

@@ -20,7 +20,7 @@ function App() {
   return (
     <div className="flex flex-col justify-between h-full px-8 py-6 bg-base-100">
       <Header />
-      <main className="flex flex-1 xl:items-start xl:justify-between items-center xl:flex-row flex-col px-20 h-full">
+      <main className="overflow-auto flex flex-1 xl:items-start xl:justify-between items-center xl:flex-row flex-col px-20 h-full">
         <QueryBuilder handleUpdateQueryState={handleUpdateQueryState} />
         <QueryResult
           queryData={queryState.data}

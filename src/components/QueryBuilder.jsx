@@ -1,33 +1,39 @@
 import { useState, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
 import dateRanges from "../../data/dates/ranges";
+import Query from "./Query";
 import QueryService from "../services/query";
-import Metric from "./Metric";
-import Filter from "./Filter";
 import DateRange from "./DateRange";
 
 export default function QueryBuilder({ handleUpdateQueryState }) {
-  const [selectedEvent, setSelectedEvent] = useState({});
-  const [selectedAggregation, setSelectedAggregation] = useState({});
-  const [selectedFilters, setSelectedFilters] = useState({
-    events: {},
-    users: {},
-  });
+  const [initialQueryId] = useState(uuidv4());
+  const [queryIds, setQueryIds] = useState([initialQueryId]);
   const [selectedDateRange, setSelectedDateRange] = useState(
     dateRanges.default || {},
   );
+
+  const defaultQueryState = {
+    event: { value: "", display: "" },
+    aggregation: { value: "", display: "", category: "" },
+    filters: { events: {}, users: {} },
+  };
+
+  const [queryState, setQueryState] = useState({
+    [initialQueryId]: defaultQueryState,
+  });
 
   useEffect(() => {
     let controller = new AbortController();
     const { signal } = controller;
 
-    const performRequest = async () => {
+    const performRequest = async (data) => {
       handleUpdateQueryState({ type: "FETCH_START", loading: true });
 
       const body = {
-        filters: selectedFilters,
-        eventName: selectedEvent.value === "all" ? null : selectedEvent.value,
-        aggregationType: selectedAggregation.value,
-        category: selectedAggregation.category,
+        filters: data.filters,
+        eventName: data.event.value === "all" ? null : data.event.value,
+        aggregationType: data.aggregation.value,
+        category: data.aggregation.category,
         dateRange: {
           previous: selectedDateRange.previous,
           timeUnit: selectedDateRange.unit,
@@ -42,100 +48,158 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
       };
 
       try {
-        const data = await QueryService.eventsBy(body, options);
-        handleUpdateQueryState({ type: "FETCH_SUCCESS", payload: data });
+        const data = QueryService.eventsBy(body, options);
+        return data;
       } catch (error) {
-        // if error is not an aborted request
-        if (!signal.aborted) {
-          handleUpdateQueryState({ type: "FETCH_ERROR", payload: error });
-        }
+        console.error(error);
       }
     };
 
-    const debouncedRequest = setTimeout(async () => {
-      if (!selectedEvent.value || !selectedAggregation.value) return;
-      await performRequest();
-    }, 1500);
+    const debounceRequests = (queryState) => {
+      return new Promise((resolve) => {
+        // uses queryIds instead of keys of queryState to guarentee order in all JS versions
+        const checkValues = async () => {
+          const allRequiredFieldsPresent = queryIds.every((queryId) => {
+            return (
+              queryState[queryId]?.event.value &&
+              queryState[queryId]?.aggregation.value
+            );
+          });
+
+          if (allRequiredFieldsPresent) {
+            setTimeout(async () => {
+              const promises = queryIds.map((queryId) =>
+                performRequest(queryState[queryId]),
+              );
+              const data = await Promise.all(promises);
+              return resolve(data);
+            }, 500); // small debounce in case they spam filters
+          }
+        };
+
+        checkValues();
+      });
+    };
+
+    const fetchData = async () => {
+      try {
+        const queryData = await debounceRequests(queryState);
+        handleUpdateQueryState({ type: "FETCH_SUCCESS", payload: queryData });
+      } catch (error) {
+        if (!signal.aborted) {
+          handleUpdateQueryState({ type: "FETCH_ERROR", payload: error });
+        }
+        console.error(error);
+      }
+    };
+
+    fetchData();
 
     return () => {
-      clearTimeout(debouncedRequest);
-      controller.abort();
-      controller = new AbortController();
+      try {
+        controller.abort(); // Abort ongoing calls if new one is made
+        controller = new AbortController(); // Reset controller for future requests
+      } catch (error) {
+        return;
+      }
     };
-  }, [
-    selectedEvent,
-    selectedAggregation,
-    selectedFilters,
-    selectedDateRange,
-    handleUpdateQueryState,
-  ]);
+  }, [selectedDateRange, handleUpdateQueryState, queryState, queryIds]);
+
+  const handleSetSelectedDateRange = (e) => {
+    const selection = e.target.dataset;
+    if (!selection.title) setSelectedDateRange(selection);
+  };
 
   const handleSetSelectedFilters = (newFilters) => {
-    const filterCopy = JSON.parse(JSON.stringify(selectedFilters));
-    const category = Object.keys(newFilters)[0];
-    const data = Object.values(newFilters)[0];
+    const owner = newFilters.owner;
+    delete newFilters.owner;
 
-    for (const attr in data) {
-      const newValue = data[attr];
+    const stateCopy = JSON.parse(JSON.stringify(queryState));
+    stateCopy[owner] = stateCopy[owner] || {};
+    stateCopy[owner].filters = stateCopy[owner].filters || {};
+    const filterCopy = stateCopy[owner].filters;
 
-      filterCopy[category][attr] = filterCopy[category][attr] || [];
-      const currentValues = filterCopy[category][attr];
+    for (const category of ["events", "users"]) {
+      for (const attr in newFilters[category]) {
+        const newValue = newFilters[category][attr];
 
-      if (!currentValues.includes(newValue)) {
-        currentValues.push(newValue);
-      } else {
-        currentValues.splice(currentValues.indexOf(newValue), 1);
-        if (currentValues.length < 1) {
-          delete filterCopy[category][attr]; // remove any empty filter arrays
+        filterCopy[category] = filterCopy[category] || {};
+        filterCopy[category][attr] = filterCopy[category][attr] || [];
+
+        if (!filterCopy[category][attr].includes(newValue)) {
+          filterCopy[category][attr].push(newValue);
+        } else {
+          filterCopy[category][attr].splice(
+            filterCopy[category][attr].indexOf(newValue),
+            1,
+          );
+          if (filterCopy[category][attr].length < 1) {
+            delete filterCopy[category][attr];
+          }
         }
       }
     }
 
-    setSelectedFilters(() => filterCopy);
+    stateCopy[owner].filters = filterCopy;
+    setQueryState(() => stateCopy);
   };
 
-  const handleSetSelectedDateRange = (e) => {
+  const handleDropdownSelection = (e) => {
+    if (!e.currentTarget.dataset.owner) return;
+    const dropDown = e.currentTarget;
+    dropDown.blur();
+
     const selection = e.target.dataset;
-    setSelectedDateRange(selection);
+    const stateCopy = JSON.parse(JSON.stringify(queryState));
+    if (!stateCopy[dropDown.dataset.owner]) {
+      stateCopy[dropDown.dataset.owner] = {
+        event: {},
+        aggregation: {},
+        filters: {},
+      };
+    }
+    stateCopy[dropDown.dataset.owner][dropDown.dataset.dropdowntype] =
+      selection;
+    setQueryState(stateCopy);
   };
 
-  const createDropdownSelectionHandler = (setter) => {
-    return (e) => {
-      const dropDown = e.currentTarget;
-      dropDown.blur();
+  const handleSetQueryEls = (_e, command, queryId) => {
+    if (command.add) {
+      setQueryIds(() => queryIds.concat(uuidv4()));
+    }
 
-      const selection = e.target.dataset;
-      setter(selection);
-    };
+    if (command.delete) {
+      const queryIdsCopy = [...queryIds];
+      const stateCopy = JSON.parse(JSON.stringify(queryState));
+      queryIdsCopy.splice(queryIdsCopy.indexOf(queryId), 1);
+      delete stateCopy[queryId];
+
+      setQueryIds(() => queryIdsCopy);
+      setQueryState(() => stateCopy);
+    }
   };
 
   return (
-    <section className="xl:w-1/3 xl:pr-20 xl:py-10 pt-10 w-3/4 h-full rounded-sm flex flex-col justify-start gap-10 bg-base-100 xl:border-r border-r-neutral-600">
+    <section className="mr-0 xl:mr-20 min-w-[505px] max-w-1/4 xl:pr-20 xl:py-10 pt-10 xl:h-full h-[1000px] rounded-sm flex flex-col justify-start gap-10 bg-base-100 xl:border-r border-r-neutral-600">
       <article className="mx-auto">
         <DateRange
           handleSetDateRange={handleSetSelectedDateRange}
           selectedDateRange={selectedDateRange}
         />
       </article>
-      <article className="flex flex-col items-center">
-        <h2 className="w-4/5 pb-1">Metric</h2>
-        <Metric
-          selectedEvent={selectedEvent}
-          selectedAggregation={selectedAggregation}
-          handleSetSelectedEvent={createDropdownSelectionHandler(
-            setSelectedEvent,
-          )}
-          handleSetSelectedAggregation={createDropdownSelectionHandler(
-            setSelectedAggregation,
-          )}
-        />
-      </article>
-      <article>
-        <Filter
+      {queryIds.map((queryId, idx) => (
+        <Query
+          key={queryId}
+          defaultQueryState={defaultQueryState}
+          queryState={queryState}
+          handleSetQueryEls={handleSetQueryEls}
           handleSetSelectedFilters={handleSetSelectedFilters}
-          selectedFilters={selectedFilters}
+          handleDropdownSelection={handleDropdownSelection}
+          queryIdx={idx} // index of array used to display 'Query 2..3' in UI
+          queryId={queryId} // unique id to identify which query selections came from
+          queryCount={queryIds.length}
         />
-      </article>
+      ))}
     </section>
   );
 }
