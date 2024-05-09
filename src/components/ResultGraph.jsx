@@ -13,7 +13,7 @@ import {
   Legend,
 } from "recharts";
 
-const CustomTooltip = ({ active, payload, label, aggregationType }) => {
+const CustomTooltip = ({ active, payload, label, aggregationTypes }) => {
   if (active && payload && payload.length) {
     return (
       <ResponsiveContainer
@@ -26,12 +26,15 @@ const CustomTooltip = ({ active, payload, label, aggregationType }) => {
         }}
       >
         <p>{`${label}`}</p>
-        {payload.map((item, index) => (
-          <p
-            style={{ color: item.color }}
-            key={index}
-          >{`Query ${index + 1} ${aggregationType}: ${item.value}`}</p>
-        ))}
+        {payload.map((item, index) => {
+          console.log(item);
+          return (
+            <p
+              style={{ color: item.color }}
+              key={index}
+            >{`Query ${index + 1}: ${item.dataKey} = ${item.value}`}</p>
+          );
+        })}
       </ResponsiveContainer>
     );
   }
@@ -73,7 +76,6 @@ const Graph = ({ queryData, chartType }) => {
   }
 
   const timeUnit = queryData[0]?.timeUnit;
-  const aggregationType = queryData[0]?.aggregationType;
 
   return (
     <ResponsiveContainer
@@ -99,15 +101,10 @@ const Graph = ({ queryData, chartType }) => {
           stroke="#ccc"
           allowDuplicatedCategory={false}
         />
-        <YAxis stroke="#ccc" dataKey={aggregationType} />
+        <YAxis stroke="#ccc" />
         <Tooltip
           cursor={chartType.bar ? false : true}
-          content={
-            <CustomTooltip
-              timeUnit={timeUnit}
-              aggregationType={aggregationType}
-            />
-          }
+          content={<CustomTooltip timeUnit={timeUnit} />}
         />
         {queryData.map((dataItem, index) => {
           return (

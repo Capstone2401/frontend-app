@@ -5,6 +5,7 @@ export default function FilterDropDown({
   attributes,
   handleSetSelectedFilters,
   selectedFilters,
+  text,
 }) {
   const eventAttrState = attributes.event;
   const userAttrState = attributes.user;
@@ -30,12 +31,12 @@ export default function FilterDropDown({
   };
 
   return (
-    <button className="dropdown dropdown-right">
+    <button className="dropdown dropdown-right w-full">
       <label
         tabIndex={0}
-        className="btn bg-base-300 hover:bg-white hover:bg-opacity-5  p-3 mx-1 w-36"
+        className="inline-block text-start btn btn-sm border bg-base-100 border-neutral-700 hover:bg-white hover:bg-opacity-5 h-fit w-full"
       >
-        Filter
+        <p className="truncate py-3 px-2 self-start text-neutral-300">{text}</p>
       </label>
       <ul
         tabIndex={0}
@@ -43,7 +44,7 @@ export default function FilterDropDown({
         onClick={processFilterSelections}
         data-owner={owner}
       >
-        <div className="max-h-[400px] overflow-auto">
+        <div className="max-h-[300px] overflow-auto">
           <FilterDropdownOptions
             type={"events"}
             attrState={eventAttrState}
