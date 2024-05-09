@@ -57,7 +57,7 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
 
     const debounceRequests = (queryState) => {
       return new Promise((resolve) => {
-        // uses queryIds instead of keys of queryState to guarentee order in all JS versions
+        // uses queryIds instead of keys of queryState to guarantee order in all JS versions
         const checkValues = async () => {
           const allRequiredFieldsPresent = queryIds.every((queryId) => {
             return (
