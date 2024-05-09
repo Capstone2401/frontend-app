@@ -35,10 +35,6 @@ export default function QueryResult({ queryData, isLoading }) {
     setChartType(chartTypeCopy);
   };
 
-  const stopPropagation = (e) => {
-    e.stopPropagation();
-  };
-
   return (
     <div className="w-full h-full">
       <div className="mt-10 mb-2 m-auto flex flex-1 justify-between w-[80%]">

@@ -38,7 +38,6 @@ const CustomTooltip = ({ active, payload, label, aggregationType }) => {
 };
 
 const Graph = ({ queryData, chartType }) => {
-  console.log(queryData);
   const colorMap = [
     "#F1D492", // Similar to the provided color
     "#FFA200", // Brighter orange
