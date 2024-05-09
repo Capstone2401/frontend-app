@@ -45,8 +45,6 @@ const Graph = ({ queryData, chartType }) => {
     "#ff6000", // Darker orange
   ];
 
-  const timeUnit = queryData[0].timeUnit;
-
   const formatQueryDataValues = (dataItem) => {
     if (!dataItem.values || dataItem.values.length < 1) return;
     const formattedValues = dataItem.values.map((item) => ({
@@ -75,6 +73,9 @@ const Graph = ({ queryData, chartType }) => {
       break;
   }
 
+  const timeUnit = queryData[0]?.timeUnit;
+  const aggregationType = queryData[0]?.aggregationType;
+
   return (
     <ResponsiveContainer
       width="80%"
@@ -99,13 +100,13 @@ const Graph = ({ queryData, chartType }) => {
           stroke="#ccc"
           allowDuplicatedCategory={false}
         />
-        <YAxis stroke="#ccc" dataKey={queryData.aggregationType} />
+        <YAxis stroke="#ccc" dataKey={aggregationType} />
         <Tooltip
           cursor={chartType.bar ? false : true}
           content={
             <CustomTooltip
               timeUnit={timeUnit}
-              aggregationType={queryData[0].aggregationType}
+              aggregationType={aggregationType}
             />
           }
         />

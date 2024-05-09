@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
 import dateRanges from "../../data/dates/ranges";
 import Query from "./Query";
 import QueryService from "../services/query";
 import DateRange from "./DateRange";
 
 export default function QueryBuilder({ handleUpdateQueryState }) {
-  const [queryEls, setQueryEls] = useState([0]);
+  const [initialQueryId] = useState(uuidv4());
+  const [queryIds, setQueryIds] = useState([initialQueryId]);
   const [selectedDateRange, setSelectedDateRange] = useState(
     dateRanges.default || {},
   );
@@ -16,7 +18,9 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
     filters: { events: {}, users: {} },
   };
 
-  const [queryState, setQuery] = useState([defaultQueryState]);
+  const [queryState, setQueryState] = useState({
+    [initialQueryId]: defaultQueryState,
+  });
 
   useEffect(() => {
     let controller = new AbortController();
@@ -51,15 +55,22 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
       }
     };
 
-    const debounceRequests = (dataList) => {
+    const debounceRequests = (queryState) => {
       return new Promise((resolve) => {
+        // uses queryIds instead of keys of queryState to guarentee order in all JS versions
         const checkValues = async () => {
-          const allRequiredFieldsPresent = dataList.every(
-            (data) => data?.event?.value && data?.aggregation?.value,
-          );
+          const allRequiredFieldsPresent = queryIds.every((queryId) => {
+            return (
+              queryState[queryId]?.event.value &&
+              queryState[queryId]?.aggregation.value
+            );
+          });
+
           if (allRequiredFieldsPresent) {
             setTimeout(async () => {
-              const promises = dataList.map((data) => performRequest(data));
+              const promises = queryIds.map((queryId) =>
+                performRequest(queryState[queryId]),
+              );
               const data = await Promise.all(promises);
               return resolve(data);
             }, 500); // small debounce in case they spam filters
@@ -92,7 +103,7 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
         return;
       }
     };
-  }, [selectedDateRange, handleUpdateQueryState, queryState]);
+  }, [selectedDateRange, handleUpdateQueryState, queryState, queryIds]);
 
   const handleSetSelectedDateRange = (e) => {
     const selection = e.target.dataset;
@@ -130,7 +141,7 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
     }
 
     stateCopy[owner].filters = filterCopy;
-    setQuery(() => stateCopy);
+    setQueryState(() => stateCopy);
   };
 
   const handleDropdownSelection = (e) => {
@@ -139,33 +150,32 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
     dropDown.blur();
 
     const selection = e.target.dataset;
-    const copyState = JSON.parse(JSON.stringify(queryState));
-    if (!copyState[dropDown.dataset.owner]) {
-      copyState[dropDown.dataset.owner] = {
+    const stateCopy = JSON.parse(JSON.stringify(queryState));
+    if (!stateCopy[dropDown.dataset.owner]) {
+      stateCopy[dropDown.dataset.owner] = {
         event: {},
         aggregation: {},
         filters: {},
       };
     }
-    copyState[dropDown.dataset.owner][dropDown.dataset.dropdowntype] =
+    stateCopy[dropDown.dataset.owner][dropDown.dataset.dropdowntype] =
       selection;
-    setQuery(copyState);
+    setQueryState(stateCopy);
   };
 
-  const handleSetQueryEls = (_e, command, queryIdx) => {
-    const nextIdx = queryEls.length - 1;
+  const handleSetQueryEls = (_e, command, queryId) => {
     if (command.add) {
-      setQueryEls(() => queryEls.concat(nextIdx + 1));
+      setQueryIds(() => queryIds.concat(uuidv4()));
     }
 
     if (command.delete) {
-      const copyDisplay = [...queryEls];
-      const copyState = JSON.parse(JSON.stringify(queryState));
-      copyDisplay.splice(queryIdx, 1);
-      copyState.splice(queryIdx, 1);
+      const queryIdsCopy = [...queryIds];
+      const stateCopy = JSON.parse(JSON.stringify(queryState));
+      queryIdsCopy.splice(queryIdsCopy.indexOf(queryId), 1);
+      delete stateCopy[queryId];
 
-      setQueryEls(() => copyDisplay);
-      setQuery(() => copyState);
+      setQueryIds(() => queryIdsCopy);
+      setQueryState(() => stateCopy);
     }
   };
 
@@ -177,16 +187,17 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
           selectedDateRange={selectedDateRange}
         />
       </article>
-      {queryEls.map((_, idx) => (
+      {queryIds.map((queryId, idx) => (
         <Query
-          key={idx}
+          key={queryId}
           defaultQueryState={defaultQueryState}
           queryState={queryState}
           handleSetQueryEls={handleSetQueryEls}
           handleSetSelectedFilters={handleSetSelectedFilters}
           handleDropdownSelection={handleDropdownSelection}
-          queryIdx={idx}
-          queryCount={queryEls.length}
+          queryIdx={idx} // index of array used to display 'Query 2..3' in UI
+          queryId={queryId} // unique id to identify which query selections came from
+          queryCount={queryIds.length}
         />
       ))}
     </section>

@@ -18,14 +18,14 @@ export default function FilterDropdownOption({
                 <p>{attribute}</p>
               </summary>
               <ul>
-                {attrState[attribute].map((value) => {
+                {attrState[attribute].map((attrValue) => {
                   return (
                     <li
-                      key={value}
-                      className={`${selectedFilters && selectedFilters[attribute] && selectedFilters[attribute].includes(value) ? "bg-white bg-opacity-10" : ""} my-1.5 rounded-lg`}
+                      key={attrValue}
+                      className={`${selectedFilters && selectedFilters[attribute] && selectedFilters[attribute].includes(attrValue) ? "bg-white bg-opacity-10" : ""} my-1.5 rounded-lg`}
                     >
-                      <a data-attribute={attribute} data-value={value}>
-                        {value}
+                      <a data-attribute={attribute} data-value={attrValue}>
+                        {attrValue}
                       </a>
                     </li>
                   );
