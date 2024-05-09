@@ -2,11 +2,11 @@ export default function Dropdown({
   dropDownType,
   owner,
   defaultDisplay,
-  items,
+  availableOptions,
   selection,
   handleSetSelection,
 }) {
-  if (!items) {
+  if (!availableOptions) {
     return null;
   }
 
@@ -26,7 +26,7 @@ export default function Dropdown({
         data-dropdowntype={dropDownType}
       >
         <div className="max-h-[400px] overflow-auto">
-          {items.map((item) => (
+          {availableOptions.map((item) => (
             <li key={item.display}>
               <a
                 {...Object.keys(item).reduce((acc, key) => {

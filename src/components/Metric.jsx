@@ -15,7 +15,7 @@ export default function Metric({
   const [availableEvents, setAvailableEvents] = useState([]);
   const defaultDisplayEvents = eventOptions.title;
   const defaultDisplayAggregations = aggregationOptions.title;
-  const aggregationTypes = aggregationOptions.predefined;
+  const availableAggregations = aggregationOptions.predefined;
 
   useEffect(() => {
     const defaultAvailableEvents = eventOptions.default || [];
@@ -46,7 +46,7 @@ export default function Metric({
             dropDownType={"event"}
             owner={owner}
             defaultDisplay={defaultDisplayEvents}
-            items={availableEvents}
+            availableOptions={availableEvents}
             selection={selectedEvent}
             handleSetSelection={handleSetSelectedEvent}
           />
@@ -56,7 +56,7 @@ export default function Metric({
             dropDownType={"aggregation"}
             owner={owner}
             defaultDisplay={defaultDisplayAggregations}
-            items={aggregationTypes}
+            availableOptions={availableAggregations}
             selection={selectedAggregation}
             handleSetSelection={handleSetSelectedAggregation}
           />

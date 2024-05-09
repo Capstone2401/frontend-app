@@ -37,8 +37,6 @@ const CustomTooltip = ({ active, payload, label, aggregationType }) => {
 const Graph = ({ queryData }) => {
   const parentRef = useRef(null);
 
-  const timeUnit = queryData[0].timeUnit;
-
   const formatQueryDataValues = (dataItem) => {
     if (!dataItem.values || dataItem.values.length < 1) return;
     const formattedValues = dataItem.values.map((item) => ({
@@ -54,6 +52,9 @@ const Graph = ({ queryData }) => {
     "#FFA200", // Brighter orange
     "#ff6000", // Darker orange
   ];
+
+  const timeUnit = queryData[0]?.timeUnit;
+  const aggregationType = queryData[0]?.aggregationType;
 
   return (
     <ResponsiveContainer
@@ -91,12 +92,12 @@ const Graph = ({ queryData }) => {
           stroke="#ccc"
           allowDuplicatedCategory={false}
         />
-        <YAxis stroke="#ccc" dataKey={queryData.aggregationType} />
+        <YAxis stroke="#ccc" dataKey={aggregationType} />
         <Tooltip
           content={
             <CustomTooltip
               timeUnit={timeUnit}
-              aggregationType={queryData[0].aggregationType}
+              aggregationType={aggregationType}
             />
           }
         />
@@ -113,7 +114,7 @@ const Graph = ({ queryData }) => {
           );
         })}
         {/* show legend if any query data */}
-        {queryData[0].values.length > 0 ? <Legend /> : null}{" "}
+        {queryData[0]?.values.length > 0 ? <Legend /> : null}{" "}
       </LineChart>
     </ResponsiveContainer>
   );
