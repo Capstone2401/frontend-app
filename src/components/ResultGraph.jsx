@@ -13,7 +13,7 @@ import {
   Legend,
 } from "recharts";
 
-const CustomTooltip = ({ active, payload, label, aggregationTypes }) => {
+const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
       <ResponsiveContainer
@@ -27,7 +27,6 @@ const CustomTooltip = ({ active, payload, label, aggregationTypes }) => {
       >
         <p>{`${label}`}</p>
         {payload.map((item, index) => {
-          console.log(item);
           return (
             <p
               style={{ color: item.color }}

@@ -98,7 +98,6 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
         const queryData = await debounceRequests(queryState);
         handleUpdateQueryState({ type: "FETCH_SUCCESS", payload: queryData });
       } catch (error) {
-        console.log(error);
         handleUpdateQueryState({ type: "FETCH_ERROR", payload: error });
         console.error(error);
       }
@@ -192,7 +191,6 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
       setQueryIds(() => queryIdsCopy);
       setQueryState(() => stateCopy);
     }
-    console.log(queryState);
   };
 
   return (
