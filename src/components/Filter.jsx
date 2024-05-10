@@ -49,7 +49,7 @@ export default function Filter({
   }
 
   return (
-    <div className="mt-4 xl:w-full w-[400px]">
+    <div className="mt-4 xl:w-full w-[400px] xl:ml-auto m-auto">
       <FilterDropdown
         owner={owner}
         attributes={attributes}
