@@ -80,8 +80,9 @@ const Graph = ({ queryData, chartType }) => {
   return (
     <ResponsiveContainer
       width="80%"
-      minWidth="1000px"
+      minWidth="500px"
       height="70%"
+      maxHeight="750px"
       minHeight="600px"
       className="mx-auto"
     >

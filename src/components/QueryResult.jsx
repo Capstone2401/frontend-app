@@ -37,8 +37,8 @@ export default function QueryResult({ queryData, isLoading }) {
 
   return (
     <div className="w-full h-full">
-      <div className="mt-10 mb-2 m-auto flex flex-1 justify-between w-[80%]">
-        <h2 className="text-neutral-400 italic self-end">Result Window:</h2>
+      <div className="mt-24 mb-2 m-auto flex flex-1 justify-between min-w-[500px] w-[80%]">
+        <h2 className="text-neutral-400 italic self-end">Result Window</h2>
         <fieldset onClick={handleSetChartType}>
           <button
             data-chart="line"
