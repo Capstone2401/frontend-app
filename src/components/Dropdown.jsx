@@ -25,7 +25,7 @@ export default function Dropdown({
         data-owner={owner}
         data-dropdowntype={dropDownType}
       >
-        <div className="max-h-[400px] overflow-auto">
+        <div className="max-h-[300px] overflow-auto">
           {availableOptions.map((item) => (
             <li key={item.display}>
               <a

@@ -51,6 +51,9 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
         const data = QueryService.eventsBy(body, options);
         return data;
       } catch (error) {
+        if (!signal.aborted) {
+          handleUpdateQueryState({ type: "FETCH_ERROR", payload: error });
+        }
         console.error(error);
       }
     };
@@ -68,11 +71,20 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
 
           if (allRequiredFieldsPresent) {
             setTimeout(async () => {
-              const promises = queryIds.map((queryId) =>
-                performRequest(queryState[queryId]),
-              );
-              const data = await Promise.all(promises);
-              return resolve(data);
+              try {
+                const promises = queryIds.map((queryId) =>
+                  performRequest(queryState[queryId]),
+                );
+                const data = await Promise.all(promises);
+                return resolve(data);
+              } catch (error) {
+                if (error.name !== "CanceledError") {
+                  // don't log if cancel from debounce
+                  console.error(error);
+                }
+
+                throw error; // caught below and issues error to state via reducer
+              }
             }, 500); // small debounce in case they spam filters
           }
         };
@@ -86,24 +98,20 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
         const queryData = await debounceRequests(queryState);
         handleUpdateQueryState({ type: "FETCH_SUCCESS", payload: queryData });
       } catch (error) {
-        if (!signal.aborted) {
-          handleUpdateQueryState({ type: "FETCH_ERROR", payload: error });
-        }
+        handleUpdateQueryState({ type: "FETCH_ERROR", payload: error });
         console.error(error);
       }
     };
 
     fetchData();
 
+    /* eslint-disable react-hooks/exhaustive-deps */ // it wants queryIds here, but doing so causes unwanted behavior
     return () => {
-      try {
-        controller.abort(); // Abort ongoing calls if new one is made
-        controller = new AbortController(); // Reset controller for future requests
-      } catch (error) {
-        return;
-      }
+      controller.abort(); // Abort ongoing calls if new one is made
+      controller = new AbortController(); // Reset controller for future requests
     };
-  }, [selectedDateRange, handleUpdateQueryState, queryState, queryIds]);
+  }, [selectedDateRange, handleUpdateQueryState, queryState]);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   const handleSetSelectedDateRange = (e) => {
     const selection = e.target.dataset;
@@ -113,8 +121,14 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
   const handleSetSelectedFilters = (newFilters) => {
     const owner = newFilters.owner;
     delete newFilters.owner;
-
     const stateCopy = JSON.parse(JSON.stringify(queryState));
+
+    if (newFilters.reset) {
+      stateCopy[owner].filters = { events: {}, users: {} };
+      setQueryState(stateCopy);
+      return;
+    }
+
     stateCopy[owner] = stateCopy[owner] || {};
     stateCopy[owner].filters = stateCopy[owner].filters || {};
     const filterCopy = stateCopy[owner].filters;
@@ -163,7 +177,7 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
     setQueryState(stateCopy);
   };
 
-  const handleSetQueryEls = (_e, command, queryId) => {
+  const handleSetQueryIds = (_e, command, queryId) => {
     if (command.add) {
       setQueryIds(() => queryIds.concat(uuidv4()));
     }
@@ -192,7 +206,7 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
           key={queryId}
           defaultQueryState={defaultQueryState}
           queryState={queryState}
-          handleSetQueryEls={handleSetQueryEls}
+          handleSetQueryEls={handleSetQueryIds}
           handleSetSelectedFilters={handleSetSelectedFilters}
           handleDropdownSelection={handleDropdownSelection}
           queryIdx={idx} // index of array used to display 'Query 2..3' in UI

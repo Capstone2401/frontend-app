@@ -2,7 +2,7 @@ export default function Footer() {
   return (
     <footer>
       <nav>
-        <ul className="flex flex-1 gap-3 items-end xl:justify-end xl:flex-row flex-col">
+        <ul className="flex flex-1 gap-3 items-end xl:justify-end justify-start xl:flex-row flex-col">
           <li>
             <a
               href="https://data-loaf.com/docs/category/api"
