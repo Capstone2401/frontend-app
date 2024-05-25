@@ -5,7 +5,7 @@ import Query from "./Query";
 import QueryService from "../services/query";
 import DateRange from "./DateRange";
 
-export default function QueryBuilder({ handleUpdateQueryState }) {
+export default function QueryBuilder({ handleUpdateQueryStatus }) {
   const [initialQueryId] = useState(uuidv4());
   const [queryIds, setQueryIds] = useState([initialQueryId]);
   const [selectedDateRange, setSelectedDateRange] = useState(
@@ -27,9 +27,9 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
     const { signal } = controller;
 
     const performRequest = async (data) => {
-      handleUpdateQueryState({ type: "FETCH_START", loading: true });
+      handleUpdateQueryStatus({ type: "FETCH_START", loading: true });
 
-      const body = {
+      const params = {
         filters: data.filters,
         eventName: data.event.value === "all" ? null : data.event.value,
         aggregationType: data.aggregation.value,
@@ -48,11 +48,11 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
       };
 
       try {
-        const data = QueryService.eventsBy(body, options);
+        const data = QueryService.eventsBy(params, options);
         return data;
       } catch (error) {
         if (!signal.aborted) {
-          handleUpdateQueryState({ type: "FETCH_ERROR", payload: error });
+          handleUpdateQueryStatus({ type: "FETCH_ERROR", payload: error });
         }
         console.error(error);
       }
@@ -96,9 +96,9 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
     const fetchData = async () => {
       try {
         const queryData = await debounceRequests(queryState);
-        handleUpdateQueryState({ type: "FETCH_SUCCESS", payload: queryData });
+        handleUpdateQueryStatus({ type: "FETCH_SUCCESS", payload: queryData });
       } catch (error) {
-        handleUpdateQueryState({ type: "FETCH_ERROR", payload: error });
+        handleUpdateQueryStatus({ type: "FETCH_ERROR", payload: error });
         console.error(error);
       }
     };
@@ -110,7 +110,7 @@ export default function QueryBuilder({ handleUpdateQueryState }) {
       controller.abort(); // Abort ongoing calls if new one is made
       controller = new AbortController(); // Reset controller for future requests
     };
-  }, [selectedDateRange, handleUpdateQueryState, queryState]);
+  }, [selectedDateRange, handleUpdateQueryStatus, queryState]);
   /* eslint-enable react-hooks/exhaustive-deps */
 
   const handleSetSelectedDateRange = (e) => {

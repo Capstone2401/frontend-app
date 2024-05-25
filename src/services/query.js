@@ -1,11 +1,10 @@
 import axios from "axios";
 
-async function eventsBy(body, options) {
-  const response = await axios.post(
-    `/api/query/${body.category}`,
-    body,
-    options,
-  );
+async function eventsBy(params, options) {
+  const response = await axios.get(`/api/query/${params.category}`, {
+    params,
+    ...options,
+  });
 
   return response.data;
 }
