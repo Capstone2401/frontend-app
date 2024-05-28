@@ -10,7 +10,7 @@ import Footer from "./Footer";
 function App() {
   const [queryState, dispatch] = useQueryReducer();
 
-  const handleUpdateQueryState = useCallback(
+  const handleUpdateQueryStatus = useCallback(
     ({ type, payload }) => {
       dispatch({ type, payload });
     },
@@ -21,7 +21,7 @@ function App() {
     <div className="flex flex-col justify-between h-full px-8 py-6 bg-base-100">
       <Header />
       <main className="overflow-auto flex flex-1 xl:items-start xl:justify-between items-center xl:flex-row flex-col px-20 h-full">
-        <QueryBuilder handleUpdateQueryState={handleUpdateQueryState} />
+        <QueryBuilder handleUpdateQueryStatus={handleUpdateQueryStatus} />
         <QueryResult
           queryData={queryState.data}
           isLoading={queryState.isLoading}
